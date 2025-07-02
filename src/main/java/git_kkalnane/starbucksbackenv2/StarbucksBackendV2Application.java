@@ -1,4 +1,4 @@
-package git.kkalane.starbucksbackendv2;
+package git_kkalnane.starbucksbackenv2;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
