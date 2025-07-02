@@ -2,10 +2,20 @@ package git_kkalnane.starbucksbackenv2.domain.item.domain.beverage;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import lombok.*;
+import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 
 @Entity
 @Table(name = "beverage_items")
-public class BeverageItem extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+
+public class BeverageItem extends BaseTimeEntity {
     @Id
     private Long id;
 
@@ -33,9 +43,15 @@ public class BeverageItem extends git_kkalnane.starbucksbackenv2.global.entity.B
     @Column(name = "shot_name", length = 254)
     private String shotName;
 
+    @ElementCollection
+    @CollectionTable(
+            name = "beverage_supported_sizes",
+            joinColumns = @JoinColumn(name = "beverage_item_id")
+    )
+    @Column(name = "size_option")
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(name = "supported_sizes")
-    private BeverageSizeOption supportedSizes;
+    private Set<BeverageSizeOption> supportedSizes= new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "supported_temperatures")
