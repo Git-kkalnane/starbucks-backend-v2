@@ -9,10 +9,10 @@ public class BeverageItem extends git_kkalnane.starbucksbackenv2.global.entity.B
     @Id
     private Long id;
 
-    @Column(name = "item_name_ko", length = 50, unique = true, nullable = false)
+    @Column(name = "name_ko", length = 50, unique = true, nullable = false)
     private String itemNameKo;
 
-    @Column(name = "item_name_en", length = 50, unique = true, nullable = false)
+    @Column(name = "name_en", length = 50, unique = true, nullable = false)
     private String itemNameEn;
 
     @Column(nullable = false, columnDefinition = "text")
@@ -24,10 +24,10 @@ public class BeverageItem extends git_kkalnane.starbucksbackenv2.global.entity.B
     @Column(name = "is_coffee")
     private Boolean isCoffee = false;
 
-    @Column(name = "hot_image_url", length = 254)
+    @Column(name = "hot_img_url", length = 254)
     private String hotImageUrl;
 
-    @Column(name = "ice_image_url", length = 254)
+    @Column(name = "ice_img_url", length = 254)
     private String iceImageUrl;
 
     @Column(name = "shot_name", length = 254)

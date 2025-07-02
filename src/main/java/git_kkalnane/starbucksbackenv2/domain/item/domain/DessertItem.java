@@ -10,10 +10,10 @@ public class DessertItem extends git_kkalnane.starbucksbackenv2.global.entity.Ba
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "dessert_item_name_ko", length = 50, unique = true, nullable = false)
+    @Column(name = "name_ko", length = 50, unique = true, nullable = false)
     private String dessertItemNameKo;
 
-    @Column(name = "dessert_item_name_en", length = 50, unique = true, nullable = false)
+    @Column(name = "name_en", length = 50, unique = true, nullable = false)
     private String dessertItemNameEn;
 
     @Column(nullable = false, columnDefinition = "text")

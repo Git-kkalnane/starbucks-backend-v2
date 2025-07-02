@@ -22,10 +22,10 @@ public class OrderItem extends git_kkalnane.starbucksbackenv2.global.entity.Base
     @Enumerated(EnumType.STRING)
     private ItemType itemType;
 
-    @Column(name = "beverage_item_id")
+    @Column(name = "beverage_id")
     private Long beverageItemId;
 
-    @Column(name = "dessert_item_id")
+    @Column(name = "dessert_id")
     private Long dessertItemId;
 
     @Column(nullable = false)

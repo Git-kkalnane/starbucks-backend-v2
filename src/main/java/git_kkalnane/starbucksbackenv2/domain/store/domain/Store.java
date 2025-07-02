@@ -54,8 +54,8 @@ public class Store extends git_kkalnane.starbucksbackenv2.global.entity.BaseTime
     @Column(name = "image_url", length = 255)
     private String imageUrl;
 
-    @Column(name = "current_crowd_level")
-    private String currentCrowdLevel;
+    @Column(name = "crowd_level")
+    private String crowdLevel;
 
     // Getters and Setters
 }

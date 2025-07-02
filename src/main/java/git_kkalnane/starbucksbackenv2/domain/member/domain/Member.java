@@ -26,7 +26,7 @@ public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTim
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "member_name", length = 50)
+    @Column(name = "name", length = 50)
     private String name;
 
     @Column(length = 50)
@@ -35,7 +35,7 @@ public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTim
     @Column(length = 255, unique = true)
     private String email;
 
-    @Column(name = "password_hash", length = 255)
+    @Column(name = "password", length = 255)
     private String password;
 
         @OneToMany(mappedBy = "member")

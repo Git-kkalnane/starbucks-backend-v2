@@ -9,13 +9,13 @@ public class Merchant extends git_kkalnane.starbucksbackenv2.global.entity.BaseT
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "merchantname", length = 50, unique = true, nullable = false)
+    @Column(name = "name", length = 50, unique = true, nullable = false)
     private String merchantName;
 
     @Column(length = 255, unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password_hash", length = 255, nullable = false)
+    @Column(name = "password", length = 255, nullable = false)
     private String passwordHash;
 
     // Getters and Setters

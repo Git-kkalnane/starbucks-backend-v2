@@ -8,11 +8,14 @@ public class CartItemOption extends git_kkalnane.starbucksbackenv2.global.entity
     @Id
     private Long id;
 
-    @Column(name = "beverage_itme_id")
-    private Long beverageItemId;
+    @Column(name = "cart_item_id")
+    private Long cartItemId;
 
-    @Column(name = "option_name", length = 50)
-    private String optionName;
+    @Column(name = "item_option_id")
+    private Long itemOptionId;
+
+    @Column(name = "quantity")
+    private Long quantity;
 
     // Getters and Setters
 }
