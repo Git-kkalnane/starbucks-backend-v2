@@ -1,4 +1,4 @@
-package git_kkalnane.starbucksbackenv2.domain.auth.jwt.utils;
+package git_kkalnane.starbucksbackenv2.domain.auth.common.jwt.utils;
 
 
 import git_kkalnane.starbucksbackenv2.domain.auth.common.exception.AuthErrorCode;

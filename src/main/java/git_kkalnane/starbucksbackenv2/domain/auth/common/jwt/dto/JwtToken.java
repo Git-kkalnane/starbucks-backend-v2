@@ -1,4 +1,4 @@
-package git_kkalnane.starbucksbackenv2.domain.auth.jwt.dto;
+package git_kkalnane.starbucksbackenv2.domain.auth.common.jwt.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

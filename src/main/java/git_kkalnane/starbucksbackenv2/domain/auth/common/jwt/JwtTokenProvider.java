@@ -1,11 +1,11 @@
-package git_kkalnane.starbucksbackenv2.domain.auth.jwt;
+package git_kkalnane.starbucksbackenv2.domain.auth.common.jwt;
 
 
 
 import git_kkalnane.starbucksbackenv2.domain.auth.common.exception.AuthErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.auth.common.exception.AuthException;
-import git_kkalnane.starbucksbackenv2.domain.auth.jwt.dto.JwtToken;
-import git_kkalnane.starbucksbackenv2.domain.auth.jwt.dto.TokenInfo;
+import git_kkalnane.starbucksbackenv2.domain.auth.common.jwt.dto.JwtToken;
+import git_kkalnane.starbucksbackenv2.domain.auth.common.jwt.dto.TokenInfo;
 import git_kkalnane.starbucksbackenv2.global.utils.GlobalLogger;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

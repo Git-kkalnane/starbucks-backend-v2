@@ -3,7 +3,7 @@ package git_kkalnane.starbucksbackenv2.global.config;
 
 import git_kkalnane.starbucksbackenv2.domain.auth.common.exception.AuthErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.auth.common.exception.AuthException;
-import git_kkalnane.starbucksbackenv2.domain.auth.jwt.utils.TokenParser;
+import git_kkalnane.starbucksbackenv2.domain.auth.common.jwt.utils.TokenParser;
 import git_kkalnane.starbucksbackenv2.domain.auth.member.service.MemberAuthService;
 import git_kkalnane.starbucksbackenv2.global.utils.GlobalLogger;
 import jakarta.servlet.http.HttpServletRequest;
