@@ -1,4 +1,4 @@
-package git_kkalnane.starbucksbackenv2.domain.item.domain;
+package git_kkalnane.starbucksbackenv2.domain.item.domain.dessert;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
