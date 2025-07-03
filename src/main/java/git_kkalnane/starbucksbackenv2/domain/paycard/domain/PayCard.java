@@ -9,7 +9,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "paycard")
+@Table(
+    name = "paycard",
+    uniqueConstraints = @UniqueConstraint(columnNames = "member_id")
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PayCard extends BaseTimeEntity {
