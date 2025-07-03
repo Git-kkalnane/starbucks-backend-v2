@@ -1,8 +1,7 @@
-package git_kkalnane.starbucksbackenv2.domain.paycard.eventlistener;
+package git_kkalnane.starbucksbackenv2.domain.member.event;
 
 
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
-import git_kkalnane.starbucksbackenv2.domain.member.event.MemberSignedUpEvent;
 import git_kkalnane.starbucksbackenv2.domain.paycard.common.exception.PayCardErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.paycard.common.exception.PayCardException;
 import git_kkalnane.starbucksbackenv2.domain.paycard.service.PayCardService;
