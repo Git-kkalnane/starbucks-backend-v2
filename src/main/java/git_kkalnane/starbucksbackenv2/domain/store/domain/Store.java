@@ -6,26 +6,42 @@ import git_kkalnane.starbucksbackenv2.domain.order.domain.Order;
 import git_kkalnane.starbucksbackenv2.domain.notification.domain.Notification;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "stores")
+@Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Store extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "merchant_id", nullable = false)
+    @JoinColumn(name = "merchant_id", nullable = true)
     private Merchant merchant;
 
     @OneToMany(mappedBy = "store")
-    private java.util.List<Order> orders;
+    @JsonIgnore
+    private List<Order> orders;
 
     @OneToMany(mappedBy = "store")
-    private java.util.List<Inquiry> inquiries;
+    @JsonIgnore
+    private List<Inquiry> inquiries;
 
     @OneToMany(mappedBy = "store")
-    private java.util.List<Notification> notifications;
+    @JsonIgnore
+    private List<Notification> notifications;
 
     @Column(nullable = false, length = 50)
     private String name;
