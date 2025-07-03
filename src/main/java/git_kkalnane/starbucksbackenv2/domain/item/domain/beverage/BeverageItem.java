@@ -1,9 +1,7 @@
 package git_kkalnane.starbucksbackenv2.domain.item.domain.beverage;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import lombok.*;
 import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 
@@ -43,21 +41,17 @@ public class BeverageItem extends BaseTimeEntity {
     @Column(name = "shot_name", length = 254)
     private String shotName;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "beverage_supported_sizes",
-            joinColumns = @JoinColumn(name = "beverage_item_id")
+    @ManyToMany
+    @JoinTable(
+        name = "beverage_item_supported_sizes",
+        joinColumns = @JoinColumn(name = "beverage_item_id"),
+        inverseJoinColumns = @JoinColumn(name = "supported_size_id")
     )
-    @Column(name = "size_option")
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private Set<BeverageSizeOption> supportedSizes= new HashSet<>();
+    private List<BeverageSupportedSize> supportedSizes;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "supported_temperatures")
     private BeverageTemperatureOption supportedTemperatures;
 
 
-
-    // Getters and Setters
 }
