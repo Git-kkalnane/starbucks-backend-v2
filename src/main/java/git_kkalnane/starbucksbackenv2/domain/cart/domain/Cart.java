@@ -1,11 +1,17 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.domain;
 
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
+import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "carts")
-public class Cart extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class Cart extends BaseTimeEntity {
     @Id
     private Long id;
 
