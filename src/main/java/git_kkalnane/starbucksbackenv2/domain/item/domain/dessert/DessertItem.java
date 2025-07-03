@@ -25,11 +25,7 @@ public class DessertItem extends git_kkalnane.starbucksbackenv2.global.entity.Ba
     @Column(name = "image_url", length = 254)
     private String imageUrl;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     // Getters and Setters
 }

@@ -57,11 +57,7 @@ public class BeverageItem extends BaseTimeEntity {
     @Column(name = "supported_temperatures")
     private BeverageTemperatureOption supportedTemperatures;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     // Getters and Setters
 }
