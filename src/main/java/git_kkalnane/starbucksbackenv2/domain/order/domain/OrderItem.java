@@ -3,11 +3,19 @@ package git_kkalnane.starbucksbackenv2.domain.order.domain;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageSizeOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
+import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "order_items")
-public class OrderItem extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class OrderItem extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,11 +24,14 @@ public class OrderItem extends git_kkalnane.starbucksbackenv2.global.entity.Base
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @OneToMany(mappedBy = "orderItem")
-    private java.util.List<OrderItemOption> orderItemOptions;
+    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItemOption> orderItemOptions;
 
     @Enumerated(EnumType.STRING)
     private ItemType itemType;
+
+    @Column(name = "item_name_at_order")
+    private String itemName;
 
     @Column(name = "beverage_id")
     private Long beverageItemId;
@@ -48,5 +59,4 @@ public class OrderItem extends git_kkalnane.starbucksbackenv2.global.entity.Base
     @Column(name = "selected_temperatures")
     private BeverageTemperatureOption selectedTemperatures;
 
-    // Getters and Setters
 }

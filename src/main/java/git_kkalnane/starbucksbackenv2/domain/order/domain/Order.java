@@ -2,12 +2,20 @@ package git_kkalnane.starbucksbackenv2.domain.order.domain;
 
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
+import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
-public class Order extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Order extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,8 +28,8 @@ public class Order extends git_kkalnane.starbucksbackenv2.global.entity.BaseTime
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @OneToMany(mappedBy = "order")
-    private java.util.List<OrderItem> orderItems;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
 
     @Column(name = "order_number", length = 20, unique = true, nullable = false)
     private String orderNumber;
@@ -46,5 +54,7 @@ public class Order extends git_kkalnane.starbucksbackenv2.global.entity.BaseTime
     @Column(name = "card_number")
     private String cardNumber;
 
-    // Getters and Setters
+    public void updateStatus(OrderStatus newStatus) {
+        this.status = newStatus; 
+    }
 }
