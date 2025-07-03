@@ -4,18 +4,24 @@ import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "paycard")
-@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PayCard extends BaseTimeEntity {
+    @Builder
+    PayCard(Long id, Member member, java.util.List<PayTransaction> payTransactions, String cardNumber, int cardAmount) {
+        this.id = id;
+        this.member = member;
+        this.payTransactions = payTransactions;
+        this.cardNumber = cardNumber;
+        this.cardAmount = cardAmount;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
