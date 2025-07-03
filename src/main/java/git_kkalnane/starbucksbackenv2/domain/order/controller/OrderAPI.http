@@ -1,0 +1,71 @@
+### 로그인하고 인증 토큰(JWT) 발급받기
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test1234@gmail.com",
+  "password": "Test1234!!"
+}
+
+> {%
+    // 응답 헤더에서 'Authorization' 값을 가져와 'token' 변수에 저장합니다.
+    client.global.set("token", response.headers.valueOf("Authorization"));
+%}
+
+
+### 주문하기
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "storeId": 1,
+  "pickupType": "STORE_PICKUP",
+  "requestMemo": "얼음 많이, 샷 연하게 부탁드려요!",
+  "cardNumber": "1234-5678-9012-3456",
+  "orderItems": [
+    {
+      "itemId": 102,
+      "itemType": "COFFEE",
+      "quantity": 1,
+      "shotQuantity": 1,
+      "selectedSizes": "TALL",
+      "selectedTemperatures": "ICE",
+      "options": [
+        {
+          "itemOptionId": 1,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "itemId": 201,
+      "itemType": "DESSERT",
+      "quantity": 2,
+      "shotQuantity": null,
+      "selectedSizes": null,
+      "selectedTemperatures": null,
+      "options": []
+    }
+  ]
+}
+
+### [사용자용] 주문 상세 조회
+# 2단계: 발급받은 토큰으로 주문 상세 내역 조회하기
+GET {{baseUrl}}/orders/1
+Authorization: {{token}}
+
+### [사용자용] 나의 현재 주문 목록 조회
+# 3단계: 로그인한 사용자의 진행중인 주문 목록을 조회합니다.
+GET {{baseUrl}}/orders/me/current
+Authorization: {{token}}
+Accept: application/json
+
+### [사용자용] 과거 주문 내역 조회
+# 로그인해서 받은 토큰으로 과거 주문 내역을 조회합니다.
+# @PageableDefault에 설정된 기본값(15개, 최신순)으로 조회됩니다.
+GET {{baseUrl}}/orders/me/history
+Authorization: {{token}}
+Accept: application/json
+
+
