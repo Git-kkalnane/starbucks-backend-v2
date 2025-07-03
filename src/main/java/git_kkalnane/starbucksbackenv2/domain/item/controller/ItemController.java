@@ -1,6 +1,8 @@
 package git_kkalnane.starbucksbackenv2.domain.item.controller;
 
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageItem;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItemService;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.BeverageItemDto;
 import git_kkalnane.starbucksbackenv2.domain.item.service.BeverageItemService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,8 @@ import java.util.List;
 @RequestMapping("items")
 public class ItemController {
     private final BeverageItemService beverageItemService;
+    private final DessertItemService dessertItemService;
+
 
     @GetMapping("drinks")
     public List<BeverageItemDto> getAllBeverages() {
@@ -22,5 +26,10 @@ public class ItemController {
                 .stream()
                 .map(BeverageItemDto::new)
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+    @GetMapping("desserts")
+    public List<DessertItem> getAllDesserts() {
+        return dessertItemService.getAllDesserts();
     }
 }
