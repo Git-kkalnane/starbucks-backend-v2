@@ -5,9 +5,12 @@ import git_kkalnane.starbucksbackenv2.domain.merchant.domain.Merchant;
 import git_kkalnane.starbucksbackenv2.domain.order.domain.Order;
 import git_kkalnane.starbucksbackenv2.domain.notification.domain.Notification;
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.math.BigDecimal;
 
 @Entity
+@Getter
 @Table(name = "stores")
 public class Store extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
     @Id
