@@ -32,13 +32,16 @@ public class Store extends git_kkalnane.starbucksbackenv2.global.entity.BaseTime
     private Merchant merchant;
 
     @OneToMany(mappedBy = "store")
-    private java.util.List<Order> orders;
+    @JsonIgnore
+    private List<Order> orders;
 
     @OneToMany(mappedBy = "store")
-    private java.util.List<Inquiry> inquiries;
+    @JsonIgnore
+    private List<Inquiry> inquiries;
 
     @OneToMany(mappedBy = "store")
-    private java.util.List<Notification> notifications;
+    @JsonIgnore
+    private List<Notification> notifications;
 
     @Column(nullable = false, length = 50)
     private String name;
