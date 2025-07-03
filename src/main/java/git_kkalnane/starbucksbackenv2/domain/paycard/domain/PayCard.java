@@ -1,11 +1,21 @@
 package git_kkalnane.starbucksbackenv2.domain.paycard.domain;
 
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
+import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "paycard")
-public class PayCard extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+@Builder
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class PayCard extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +31,6 @@ public class PayCard extends git_kkalnane.starbucksbackenv2.global.entity.BaseTi
     private String cardNumber;
 
     @Column(name = "card_amount", nullable = false)
-    private Long cardAmount;
+    private int cardAmount;
 
-    // Getters and Setters
 }
