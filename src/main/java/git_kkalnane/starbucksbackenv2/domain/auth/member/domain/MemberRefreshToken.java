@@ -9,7 +9,6 @@ import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.Objects;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,10 +16,17 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "member_refresh_token")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
+
 @Getter
 public class MemberRefreshToken {
+    @Builder
+    MemberRefreshToken(Long id, Long memberId, String token, Date expiration) {
+        this.id = id;
+        this.memberId = memberId;
+        this.token = token;
+        this.expiration = expiration;
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
