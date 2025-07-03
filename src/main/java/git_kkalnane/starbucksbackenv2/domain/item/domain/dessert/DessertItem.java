@@ -1,11 +1,21 @@
 package git_kkalnane.starbucksbackenv2.domain.item.domain.dessert;
 
+import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 
 @Entity
+@Getter
 @Table(name = "dessert_items")
-public class DessertItem extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class DessertItem extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
