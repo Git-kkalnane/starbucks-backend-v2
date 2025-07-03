@@ -1,0 +1,5 @@
+<script>start("/Users/joungmin/project/goorm-first/starbucks-backend-v2/.github/");</script>
+<script>onHasParentDirectory();</script>
+<script>addRow("DISCUSSION_TEMPLATE","DISCUSSION_TEMPLATE",1,96,"96 B",1751504288,"25. 7. 3. 오전 9:58:08");</script>
+<script>addRow("ISSUE_TEMPLATE","ISSUE_TEMPLATE",1,128,"128 B",1751504288,"25. 7. 3. 오전 9:58:08");</script>
+<script>addRow("PULL_REQUEST_TEMPLATE.md","PULL_REQUEST_TEMPLATE.md",0,1187,"1.2 kB",1751504288,"25. 7. 3. 오전 9:58:08");</script>
