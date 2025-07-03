@@ -8,7 +8,6 @@ import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 @Entity
 @Table(name = "beverage_items")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
