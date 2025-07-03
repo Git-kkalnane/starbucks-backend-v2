@@ -55,6 +55,6 @@ public class Order extends BaseTimeEntity {
     private String cardNumber;
 
     public void updateStatus(OrderStatus newStatus) {
-        this.status = newStatus; 
+        this.status = newStatus;
     }
 }
