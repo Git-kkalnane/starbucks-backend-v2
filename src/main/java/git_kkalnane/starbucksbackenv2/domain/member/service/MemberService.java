@@ -4,6 +4,7 @@ package git_kkalnane.starbucksbackenv2.domain.member.service;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.member.dto.request.SignUpRequest;
 import git_kkalnane.starbucksbackenv2.domain.member.dto.response.SignUpResponse;
+import git_kkalnane.starbucksbackenv2.domain.member.event.MemberSignedUpEvent;
 import git_kkalnane.starbucksbackenv2.domain.member.repository.MemberRepository;
 import git_kkalnane.starbucksbackenv2.global.utils.Encryptor;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class MemberService {
 
         Member savedMember = memberRepository.save(member);
         
-//        eventPublisher.publishEvent(new MemberSignedUpEvent(this, savedMember));
+        eventPublisher.publishEvent(new MemberSignedUpEvent(this, savedMember));
 
         return new SignUpResponse(savedMember.getName());
     }
