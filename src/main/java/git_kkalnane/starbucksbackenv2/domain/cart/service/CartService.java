@@ -15,12 +15,19 @@ import git_kkalnane.starbucksbackenv2.domain.cart.repository.query.CartQueryRepo
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageSizeOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
+import git_kkalnane.starbucksbackenv2.domain.item.repository.ItemOptionRepository;
+import git_kkalnane.starbucksbackenv2.domain.member.common.exception.MemberErrorCode;
+import git_kkalnane.starbucksbackenv2.domain.member.common.exception.MemberException;
+import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
+import git_kkalnane.starbucksbackenv2.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType.BEVERAGE;
+import static git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType.DESSERT;
 
 @Service
 @RequiredArgsConstructor
@@ -30,9 +37,15 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartQueryRepository cartQueryRepository;
     private final CartItemOptionRepository cartItemOptionRepository;
+    private final MemberRepository memberRepository;
+    private final ItemOptionRepository itemOptionRepository;
 
     @Transactional
     public CartItemResponse addCartItem(Long memberId, CartItemDto cartItemDto) {
+
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                ()-> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
         Cart cart = cartRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_NOT_FOUND));
 
@@ -42,11 +55,25 @@ public class CartService {
 
         Long totalPrice = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionIds);
 
+        Long beverageItemId = null, dessertItemId = null;
+
+        switch (cartItemDto.itemType()) {
+            case BEVERAGE:
+                beverageItemId= cartItemDto.itemId();
+                break;
+            case DESSERT:
+                dessertItemId = cartItemDto.itemId();
+                break;
+            default :
+                throw new CartException(CartErrorCode.INVALID_TYPE);
+        }
+
         CartItem cartItem = CartItem.builder()
                 .cart(cart)
                 .itemType((ItemType) cartItemDto.itemType())
                 .quantity(cartItemDto.quantity())
-                .beverageItemId(cartItemDto.itemId())
+                .beverageItemId(beverageItemId)
+                .dessertItemId(dessertItemId)
                 .imageUrl(cartItemDto.image())
                 .selectedSizes((BeverageSizeOption) cartItemDto.cupSize())
                 .selectedTemperatures((BeverageTemperatureOption) cartItemDto.temperatureOption())
@@ -67,13 +94,14 @@ public class CartService {
                     .toList();
             cartItemOptionRepository.saveAll(options);
 
+
             optionDtos = options.stream()
                     .map(option -> new CartItemOptionDto(
                             option.getId(),
                             option.getCartItemId(),
                             option.getItemOptionId(),
                             option.getQuantity(),
-                            null
+                            itemOptionRepository.findNameById(option.getItemOptionId())
                     )).toList();
         }
         return new CartItemResponse(

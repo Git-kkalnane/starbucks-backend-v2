@@ -1,6 +1,8 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.repository.query;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartErrorCode;
+import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartException;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.Cart;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.QCart;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.QItemOption;
@@ -44,13 +46,19 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
                 .where(beverageItem.id.eq(itemId))
                 .fetchOne();
 
+        if(price == null) {
+            throw new CartException(CartErrorCode.INVALID_ITEM);
+        }
+
         Integer additionalPrice = queryFactory
                 .select(option.optionPrice.sum())
                 .from(option)
                 .where(option.id.in(optionIds))
                 .fetchOne();
 
-        return (long) (price + additionalPrice);
+        long safeAdditionalPrice = (additionalPrice != null) ? additionalPrice : 0L;
+
+        return (price + safeAdditionalPrice);
     }
 
 

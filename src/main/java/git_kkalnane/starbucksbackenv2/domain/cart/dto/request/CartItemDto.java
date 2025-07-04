@@ -1,5 +1,8 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.dto.request;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public record CartItemDto(
@@ -9,9 +12,9 @@ public record CartItemDto(
        String image,
        Enum itemType,
        Enum temperatureOption ,
-       List<CartItemOptionDto> cartItemOptions,
+       @NotNull List<CartItemOptionDto> cartItemOptions,
        Enum cupSize,
-       Long quantity,
+       @Min(1) Long quantity,
        Long priceWithOptions
 
 ) {
