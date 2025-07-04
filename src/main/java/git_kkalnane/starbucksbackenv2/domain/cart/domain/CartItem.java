@@ -7,6 +7,8 @@ import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "cart_items")
 @Getter
@@ -56,6 +58,7 @@ public class CartItem extends BaseTimeEntity {
 
     @Column(name = "image_url")
     private String imageUrl;
+
 
     // Getters and Setters
 }
