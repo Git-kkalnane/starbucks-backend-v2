@@ -28,9 +28,7 @@ import lombok.NoArgsConstructor;
 @ToString
 @Table(name = "stores")
 @Builder
-@Getter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Store extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
     @Builder
     public Store(Long id, Merchant merchant, String name, String address, String phone, String openingHours, Boolean hasDriveThrough, Integer seatingCapacity, BigDecimal latitude, BigDecimal longitude, String imageUrl, String crowdLevel) {
