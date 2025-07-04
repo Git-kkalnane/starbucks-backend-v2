@@ -5,14 +5,35 @@ import git_kkalnane.starbucksbackenv2.domain.merchant.domain.Merchant;
 import git_kkalnane.starbucksbackenv2.domain.order.domain.Order;
 import git_kkalnane.starbucksbackenv2.domain.notification.domain.Notification;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 @Table(name = "stores")
 public class Store extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+    @Builder
+    public Store(Long id, Merchant merchant, String name, String address, String phone, String openingHours, Boolean hasDriveThrough, Integer seatingCapacity, BigDecimal latitude, BigDecimal longitude, String imageUrl, String crowdLevel) {
+        this.id = id;
+        this.merchant = merchant;
+        this.name = name;
+        this.address = address;
+        this.phone = phone;
+        this.openingHours = openingHours;
+        this.hasDriveThrough = hasDriveThrough;
+        this.seatingCapacity = seatingCapacity;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.imageUrl = imageUrl;
+        this.crowdLevel = crowdLevel;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
