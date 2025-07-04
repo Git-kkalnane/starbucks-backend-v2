@@ -19,3 +19,4 @@ public class StoreSimpleDto {
     private String imageUrl;
     private String crowdLevel;
 }
+

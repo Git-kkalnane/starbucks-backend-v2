@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.util.List;
 
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
@@ -25,5 +26,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             "s.id, s.name, s.address, s.phone, s.openingHours, s.hasDriveThrough, s.seatingCapacity, s.latitude, s.longitude, s.imageUrl, s.crowdLevel) \n" +
             "FROM Store s WHERE s.id = :id")
     Optional<StoreSimpleDto> findSimpleDtoById(@Param("id") Long id);
+
+    @Query("SELECT new git_kkalnane.starbucksbackenv2.domain.store.dto.StoreSimpleDto(s.id, s.name, s.address, s.phone, s.openingHours, s.hasDriveThrough, s.seatingCapacity, s.latitude, s.longitude, s.imageUrl, s.crowdLevel) FROM Store s")
+    List<StoreSimpleDto> findAllSimpleStores();
 
 }
