@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final MemberAuthInterceptor memberAuthInterceptor;
-//    private final MerchantAuthInterceptor merchantAuthInterceptor;
+    private final MerchantAuthInterceptor merchantAuthInterceptor;
 
     @Value("${cors.allowed-origins}")
     private String allowedOrigins;
@@ -47,10 +47,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/members/signup", "/auth/login")     // 고객 회원가입, 로그인 엔드포인트 제외
                 .excludePathPatterns("/merchant/**");
 
-//        registry.addInterceptor(merchantAuthInterceptor)
-//                .addPathPatterns("/merchant/**")
-//                .excludePathPatterns("/merchant/signup", "/merchant/login") // 매장 회원가입, 로그인 엔드포인트 제외
-//        ;
+        registry.addInterceptor(merchantAuthInterceptor)
+                .addPathPatterns("/merchant/**")
+                .excludePathPatterns("/merchant/signup", "/merchant/auth/login") // 매장 회원가입, 로그인 엔드포인트 제외
+        ;
     }
 
     @Override
