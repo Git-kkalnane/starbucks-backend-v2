@@ -20,6 +20,7 @@ import git_kkalnane.starbucksbackenv2.domain.order.repository.OrderDailyCounterR
 import git_kkalnane.starbucksbackenv2.domain.order.repository.OrderRepository;
 //import git_kkalnane.starbucksbackenv2.domain.payment.service.PaymentService;
 import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
+import git_kkalnane.starbucksbackenv2.domain.store.dto.StoreSimpleDto;
 import git_kkalnane.starbucksbackenv2.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -52,6 +53,7 @@ public class OrderService {
 
     /**
      * 새로운 주문을 생성하고, 가격을 계산하며, 결제를 처리합니다.
+     *
      * @param request  주문 생성에 필요한 모든 정보를 담은 DTO
      * @param memberId 주문을 생성하는 회원의 ID (인증을 통해 획득)
      * @return 생성되고 저장된 Order 엔티티
@@ -60,7 +62,7 @@ public class OrderService {
     public Order createOrder(OrderCreateRequest request, Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.MEMBER_NOT_FOUND));
-        Store store = storeRepository.findById(request.storeId())
+        StoreSimpleDto store = storeRepository.findSimpleDtoById(request.storeId())
                 .orElseThrow(() -> new OrderException(OrderErrorCode.STORE_NOT_FOUND));
 
         List<OrderItem> orderItems = request.orderItems().stream()
@@ -72,10 +74,13 @@ public class OrderService {
                 .sum();
 
         String orderNumber = generateOrderNumber(request);
+        Store minimalStore = Store.builder()
+            .id(store.getId())
+            .build();
 
         Order order = Order.builder()
                 .member(member)
-                .store(store)
+                .store(minimalStore)
                 .orderNumber(orderNumber)
                 .totalPrice(calculatedTotalPrice)
                 .status(OrderStatus.PLACED)
@@ -230,7 +235,7 @@ public class OrderService {
     }
 
     /**
-     * [매장용] 특정 매장의 현재 진행중인 모든 주문 목록(접수, 준비중, 픽업 가능)을 조회합니다.
+     * [매장용] 특정 매장의 현재 진행중인 모든 주문 목록(접수, 준비중, 픽업 가능)을 조회합니다. <br/>
      * @param storeId 조회할 매장의 ID
      * @return 현재 진행중인 주문 목록 DTO 리스트
      */
@@ -252,8 +257,7 @@ public class OrderService {
     }
 
     /**
-     * [매장용] 특정 주문의 상세 정보를 조회합니다.
-     * 이 때, 요청한 매장이 해당 주문을 조회할 권한이 있는지 확인합니다.
+     * [매장용] 특정 주문의 상세 정보를 조회합니다. 이 때, 요청한 매장이 해당 주문을 조회할 권한이 있는지 확인합니다. <br/>
      *
      * @param loginStoreId 로그인한 매장의 ID
      * @param orderId      조회할 주문의 ID
@@ -271,7 +275,7 @@ public class OrderService {
     }
 
     /**
-     * [매장용] 특정 매장의 과거 주문 내역(완료, 취소)을 페이지네이션하여 조회합니다.
+     * [매장용] 특정 매장의 과거 주문 내역(완료, 취소)을 페이지네이션하여 조회합니다. <br/>
      * @param storeId  조회할 매장의 ID
      * @param pageable 페이징 및 정렬 정보
      * @return 페이지네이션된 과거 주문 내역 DTO
