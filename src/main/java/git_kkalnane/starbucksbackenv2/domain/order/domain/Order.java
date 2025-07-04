@@ -2,12 +2,38 @@ package git_kkalnane.starbucksbackenv2.domain.order.domain;
 
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
+import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
-public class Order extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Order extends BaseTimeEntity {
+
+    /**
+     * Order 엔티티 생성 static 팩토리 메서드
+     */
+    public static Order createOrderEntity(Member member, Store store, String orderNumber, Long totalPrice, git_kkalnane.starbucksbackenv2.domain.order.dto.request.OrderCreateRequest request) {
+        return Order.builder()
+                .member(member)
+                .store(store)
+                .orderNumber(orderNumber)
+                .totalPrice(totalPrice)
+                .status(OrderStatus.PLACED)
+                .pickupType(request.pickupType())
+                .requestMemo(request.requestMemo())
+                .expectedPickupTime(java.time.LocalDateTime.now().plusMinutes(10))
+                .cardNumber(request.cardNumber())
+                .build();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,8 +46,8 @@ public class Order extends git_kkalnane.starbucksbackenv2.global.entity.BaseTime
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @OneToMany(mappedBy = "order")
-    private java.util.List<OrderItem> orderItems;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
 
     @Column(name = "order_number", length = 20, unique = true, nullable = false)
     private String orderNumber;
@@ -46,5 +72,7 @@ public class Order extends git_kkalnane.starbucksbackenv2.global.entity.BaseTime
     @Column(name = "card_number")
     private String cardNumber;
 
-    // Getters and Setters
+    public void updateStatus(OrderStatus newStatus) {
+        this.status = newStatus;
+    }
 }

@@ -1,6 +1,7 @@
 package git_kkalnane.starbucksbackenv2.domain.item.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 /**
  * ItemOption
@@ -11,6 +12,7 @@ import jakarta.persistence.*;
  * @since 2025-07-02
  */
 @Entity
+@Getter
 @Table(name = "item_options")
 public class ItemOption extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
     @Id
@@ -18,7 +20,7 @@ public class ItemOption extends git_kkalnane.starbucksbackenv2.global.entity.Bas
     private Long id;
 
     @Column(name = "item_id")
-    private Long itemId; // 현재 기획은 BeverageItem.id만 적용
+    private Long itemId;
     @Column(name = "name", length = 50)
     private String name;
 
