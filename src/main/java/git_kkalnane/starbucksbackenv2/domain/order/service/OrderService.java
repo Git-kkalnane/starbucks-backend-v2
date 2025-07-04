@@ -51,6 +51,7 @@ public class OrderService {
     private final OrderDailyCounterRepository orderDailyCounterRepository;
 //    private final PaymentService paymentService;
 
+    // ====== 주문 생성 ======
     /**
      * 새로운 주문을 생성하고, 가격을 계산하며, 결제를 처리합니다.
      *
@@ -60,42 +61,49 @@ public class OrderService {
      */
     @Transactional
     public Order createOrder(OrderCreateRequest request, Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new OrderException(OrderErrorCode.MEMBER_NOT_FOUND));
-        StoreSimpleDto store = storeRepository.findSimpleDtoById(request.storeId())
-                .orElseThrow(() -> new OrderException(OrderErrorCode.STORE_NOT_FOUND));
-
-        List<OrderItem> orderItems = request.orderItems().stream()
-                .map(this::createOrderItemFromRequest)
-                .collect(Collectors.toList());
-
-        Long calculatedTotalPrice = orderItems.stream()
-                .mapToLong(OrderItem::getFinalItemPrice)
-                .sum();
-
+        Member member = getMemberOrThrow(memberId);
+        StoreSimpleDto store = getStoreDtoOrThrow(request.storeId());
+        List<OrderItem> orderItems = createOrderItems(request);
+        Long calculatedTotalPrice = calculateTotalPrice(orderItems);
         String orderNumber = generateOrderNumber(request);
-        Store minimalStore = Store.builder()
-            .id(store.getId())
-            .build();
-
-        Order order = Order.builder()
-                .member(member)
-                .store(minimalStore)
-                .orderNumber(orderNumber)
-                .totalPrice(calculatedTotalPrice)
-                .status(OrderStatus.PLACED)
-                .pickupType(request.pickupType())
-                .requestMemo(request.requestMemo())
-                .expectedPickupTime(LocalDateTime.now().plusMinutes(10))
-                .cardNumber(request.cardNumber())
-                .build();
-
-//        orderItems.forEach(order::addOrderItem);
-
+        Store minimalStore = createMinimalStore(store);
+        Order order = Order.createOrderEntity(member, minimalStore, orderNumber, calculatedTotalPrice, request);
         Order savedOrder = orderRepository.save(order);
-//        paymentService.processPayment(savedOrder);
+        // paymentService.processPayment(savedOrder);
         return savedOrder;
     }
+
+    // ====== Private Helper Methods ======
+    private Member getMemberOrThrow(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    private StoreSimpleDto getStoreDtoOrThrow(Long storeId) {
+        return storeRepository.findSimpleDtoById(storeId)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.STORE_NOT_FOUND));
+    }
+
+    private List<OrderItem> createOrderItems(OrderCreateRequest request) {
+        return request.orderItems().stream()
+                .map(this::createOrderItemFromRequest)
+                .collect(Collectors.toList());
+    }
+
+    private Long calculateTotalPrice(List<OrderItem> orderItems) {
+        return orderItems.stream()
+                .mapToLong(OrderItem::getFinalItemPrice)
+                .sum();
+    }
+
+    private Store createMinimalStore(StoreSimpleDto storeDto) {
+        return Store.builder()
+                .id(storeDto.getId())
+                .build();
+    }
+
+
+
 
     /**
      * OrderItemRequest DTO로부터 OrderItem 엔티티를 생성하고 가격을 계산합니다.

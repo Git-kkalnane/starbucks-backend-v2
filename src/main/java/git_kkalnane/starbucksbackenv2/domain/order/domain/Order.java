@@ -16,6 +16,24 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseTimeEntity {
+
+    /**
+     * Order 엔티티 생성 static 팩토리 메서드
+     */
+    public static Order createOrderEntity(Member member, Store store, String orderNumber, Long totalPrice, git_kkalnane.starbucksbackenv2.domain.order.dto.request.OrderCreateRequest request) {
+        return Order.builder()
+                .member(member)
+                .store(store)
+                .orderNumber(orderNumber)
+                .totalPrice(totalPrice)
+                .status(OrderStatus.PLACED)
+                .pickupType(request.pickupType())
+                .requestMemo(request.requestMemo())
+                .expectedPickupTime(java.time.LocalDateTime.now().plusMinutes(10))
+                .cardNumber(request.cardNumber())
+                .build();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
