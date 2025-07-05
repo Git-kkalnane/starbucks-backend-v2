@@ -12,8 +12,9 @@ public enum PointCardErrorCode implements ErrorCode {
     POINT_CARD_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 보유 중인 포인트 카드가 있습니다."),
     NOT_ENOUGH_POINT_CARD_AMOUNT(HttpStatus.BAD_REQUEST, "포인트 잔액이 부족합니다."),
     FAIL_POINT_TRANSACTION(HttpStatus.BAD_REQUEST, "포인트 사용 실패했습니다."),
-    POINT_CARD_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "포인트 카드 생성에 실패했습니다. 다시 시도해주세요.");
-
+    POINT_CARD_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "포인트 카드 생성에 실패했습니다. 다시 시도해주세요."),
+    PAYMENT_AMOUNT_IS_NEGATIVE(HttpStatus.BAD_REQUEST, "결제 금액이 음수 입니다. 결제 금액은 0이상이어야 합니다.");
+    
     public static final String PREFIX = "[POINT_CARD ERROR] ";
 
     private final HttpStatus status;

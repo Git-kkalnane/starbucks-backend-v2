@@ -99,4 +99,18 @@ public class PointCardService {
     return "" + amount + type.getKorean();
  }   
 
+    /**
+     * 결제 금액의 1%를 포인트로 적립하는 금액을 계산합니다.
+     *
+     * @param paidAmount 결제한 금액 (음수일 수 없음)
+     * @return 적립될 포인트 금액 (정수)
+     * @throws IllegalArgumentException 결제 금액이 음수일 경우 발생
+     */
+    public int calculateEarnedPoint(int paidAmount) {
+    if (paidAmount < 0) {
+        throw new PointCardException(PointCardErrorCode.PAYMENT_AMOUNT_IS_NEGATIVE);
+    }
+    return paidAmount / 100;
+}
+
 }
