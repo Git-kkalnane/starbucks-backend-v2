@@ -1,11 +1,26 @@
 package git_kkalnane.starbucksbackenv2.domain.pointcard.domain;
 
-import git_kkalnane.starbucksbackenv2.domain.paycard.TransactionType;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
+import git_kkalnane.starbucksbackenv2.domain.pointcard.common.PointTransactionType;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "point_transaction")
-public class PointTransaction extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class PointTransaction extends BaseTimeEntity {
+
+    @Builder
+    public PointTransaction(PointCard pointCard, Long payAmount, String description, PointTransactionType type) {
+        this.pointCard = pointCard;
+        this.payAmount = payAmount;
+        this.description = description;
+        this.type = type;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +36,7 @@ public class PointTransaction extends git_kkalnane.starbucksbackenv2.global.enti
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private TransactionType type;
+    private PointTransactionType type;
 
-    // Getters and Setters
+
 }
