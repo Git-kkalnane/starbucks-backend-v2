@@ -1,5 +1,7 @@
 package git_kkalnane.starbucksbackenv2.domain.order.domain;
 
+import git_kkalnane.starbucksbackenv2.domain.order.dto.request.OrderItemRequest;
+
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageSizeOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
@@ -34,6 +36,32 @@ public class OrderItem extends BaseTimeEntity {
         this.selectedSize = selectedSize;
         this.selectedTemperature = selectedTemperature;
     }
+
+    /**
+     * OrderItemRequest 기반으로 OrderItem 생성 (OrderFactory에서 사용)
+     */
+    public static OrderItem ofRequest(
+            OrderItemRequest request,
+            String itemName,
+            long itemPrice,
+            long finalItemPrice,
+            List<OrderItemOption> options
+    ) {
+        return OrderItem.builder()
+                .itemType(request.itemType())
+                .beverageItemId(request.itemType() != ItemType.DESSERT ? request.itemId() : null)
+                .dessertItemId(request.itemType() == ItemType.DESSERT ? request.itemId() : null)
+                .quantity(request.quantity())
+                .itemName(itemName)
+                .itemPrice(itemPrice)
+                .finalItemPrice(finalItemPrice)
+                .shotQuantity(request.shotQuantity())
+                .selectedSize(request.selectedSizes())
+                .selectedTemperature(request.selectedTemperatures())
+                .orderItemOptions(options)
+                .build();
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

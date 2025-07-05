@@ -5,6 +5,7 @@ import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.paycard.common.exception.PayCardErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.paycard.common.exception.PayCardException;
 import git_kkalnane.starbucksbackenv2.domain.paycard.service.PayCardService;
+import git_kkalnane.starbucksbackenv2.domain.pointcard.service.PointCardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -20,6 +21,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class MemberSignupEventListener {
 
     private final PayCardService payCardService;
+    private final PointCardService pointCardService;
 
     /**
      * 회원가입 완료 후 PayCard를 생성하는 이벤트 리스너
@@ -29,17 +31,20 @@ public class MemberSignupEventListener {
      */
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @TransactionalEventListener(
-        phase = TransactionPhase.AFTER_COMPLETION,
-        classes = MemberSignedUpEvent.class
-    )
-
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION, classes = MemberSignedUpEvent.class)
     public void handleMemberSignedUpEvent(MemberSignedUpEvent event) {
         Member member = event.getMember();
+        createPayCardForMember(member);
+        createPointCardForMember(member);
+    }
+
+    /**
+     * 회원의 PayCard를 생성하고 예외를 처리합니다.
+     */
+    private void createPayCardForMember(Member member) {
         try {
             payCardService.createPayCard(member);
-            log.info( "PayCard 생성 - 회원: {}", member.getEmail());
-
+            log.info("PayCard 생성 - 회원: {}", member.getEmail());
         } catch (PayCardException e) {
             if (e.getErrorCode() == PayCardErrorCode.PAY_CARD_ALREADY_EXISTS) {
                 log.warn("PayCard 이미 존재 - 회원 : {}", member.getEmail());
@@ -50,4 +55,24 @@ public class MemberSignupEventListener {
             log.error("PayCard 생성 중 예상치 못한 오류가 발생했습니다. 회원: {}", member.getEmail(), e);
         }
     }
+
+
+    /**
+     * 회원의 PointCard를 생성하고 예외를 처리합니다.
+     */
+    private void createPointCardForMember(Member member) {
+        try {
+            pointCardService.createPointCard(member);
+            log.info("PointCard 생성 - 회원: {}", member.getEmail());
+        } catch (PayCardException e) {
+            if (e.getErrorCode() == PayCardErrorCode.PAY_CARD_ALREADY_EXISTS) {
+                log.warn("PointCard 이미 존재 - 회원 : {}", member.getEmail());
+            } else {
+                log.error("PointCard 생성 실패 - 회원: {}. 오류: {}", member.getEmail(), e.getMessage(), e);
+            }
+        } catch (Exception e) {
+            log.error("PointCard 생성 중 예상치 못한 오류가 발생했습니다. 회원: {}", member.getEmail(), e);
+        }
+    }
 }
+

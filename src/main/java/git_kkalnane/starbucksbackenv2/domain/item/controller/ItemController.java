@@ -2,9 +2,9 @@ package git_kkalnane.starbucksbackenv2.domain.item.controller;
 
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageItem;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
-import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItemService;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.BeverageItemDto;
 import git_kkalnane.starbucksbackenv2.domain.item.service.BeverageItemService;
+import git_kkalnane.starbucksbackenv2.domain.item.service.DessertItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

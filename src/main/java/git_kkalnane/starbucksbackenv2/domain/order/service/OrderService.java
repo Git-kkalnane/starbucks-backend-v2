@@ -7,6 +7,9 @@ import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.BeverageItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.DessertItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.ItemOptionRepository;
+import git_kkalnane.starbucksbackenv2.domain.item.service.BeverageItemService;
+import git_kkalnane.starbucksbackenv2.domain.item.service.DessertItemService;
+import git_kkalnane.starbucksbackenv2.domain.item.service.ItemOptionService;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.member.repository.MemberRepository;
 import git_kkalnane.starbucksbackenv2.domain.order.common.exception.OrderErrorCode;
@@ -45,11 +48,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final OrderItemService orderItemService;
+    private final BeverageItemService beverageItemService;
+    private final DessertItemService dessertItemService;
+    private final ItemOptionService itemOptionService;
     private final StoreRepository storeRepository;
-    private final BeverageItemRepository beverageItemRepository;
-    private final DessertItemRepository dessertItemRepository;
-    private final ItemOptionRepository itemOptionRepository;
-    private final OrderDailyCounterRepository orderDailyCounterRepository;
+    private final OrderFactory orderFactory;
+    private final OrderPriceCalculator orderPriceCalculator;
+    private final OrderNumberGenerator orderNumberGenerator;
 
     // ====== 주문 생성 ======
     /**
@@ -63,19 +68,17 @@ public class OrderService {
     public Order createOrder(OrderCreateRequest request, Long memberId) {
         Member member = getMemberOrThrow(memberId);
         StoreSimpleDto store = getStoreDtoOrThrow(request.storeId());
-        List<OrderItem> orderItems = createOrderItems(request);
-        Long calculatedTotalPrice = calculateTotalPrice(orderItems);
-        String orderNumber = generateOrderNumber(request);
-        Store minimalStore = createMinimalStore(store);
-        Order order = Order.createNewOrder(member, minimalStore, orderNumber, calculatedTotalPrice,request);
-        // paymentService.processPayment(savedOrder);
+        List<OrderItem> orderItems = orderFactory.createOrderItems(request);
+        Long calculatedTotalPrice = orderPriceCalculator.calculateTotalPrice(orderItems);
+        String orderNumber = orderNumberGenerator.generateOrderNumber(request);
+        Store minimalStore = orderFactory.createMinimalStore(store);
+        Order order = orderFactory.createOrder(member, minimalStore, orderNumber, calculatedTotalPrice, request);
 
         // Order 저장
         Order savedOrder = orderRepository.save(order);
 
         // List<OrderItem> 저장, OrderItem은 OrderId가 없으면 에러 발생
-        List <OrderItem> savedOrderItems = new ArrayList<>();
-        orderItemService.saveOrderItems(savedOrder.getId(), savedOrderItems);
+        orderItemService.saveOrderItems(savedOrder.getId(), orderItems);
 
         return savedOrder;
     }
@@ -92,121 +95,62 @@ public class OrderService {
                 .orElseThrow(() -> new OrderException(OrderErrorCode.STORE_NOT_FOUND));
     }
 
-    private List<OrderItem> createOrderItems(OrderCreateRequest request) {
-        return request.orderItems().stream()
-                .map(this::createOrderItemFromRequest)
-                .collect(Collectors.toList());
-    }
 
-    private Long calculateTotalPrice(List<OrderItem> orderItems) {
-        return orderItems.stream()
-                .mapToLong(OrderItem::getFinalItemPrice)
-                .sum();
-    }
-
-    private Store createMinimalStore(StoreSimpleDto storeDto) {
-        return Store.builder()
-                .id(storeDto.getId())
-                .build();
-    }
-
-
-
-
-    /**
-     * OrderItemRequest DTO로부터 OrderItem 엔티티를 생성하고 가격을 계산합니다.
-     */
-    private OrderItem createOrderItemFromRequest(OrderItemRequest request) {
-        long itemPrice = 0L;
-        String itemName = "";
-
-        if (request.itemType() == ItemType.BEVERAGE || request.itemType() == ItemType.COFFEE) {
-            BeverageItem item = beverageItemRepository.findById(request.itemId())
-                    .orElseThrow(() -> new OrderException(OrderErrorCode.ITEM_NOT_FOUND));
-            itemPrice = item.getPrice();
-            itemName = item.getItemNameKo();
-        } else { // DESSERT
-            DessertItem item = dessertItemRepository.findById(request.itemId())
-                    .orElseThrow(() -> new OrderException(OrderErrorCode.ITEM_NOT_FOUND));
-            itemPrice = item.getPrice();
-            itemName = item.getDessertItemNameKo();
-        }
-
-        long optionsTotalPrice = 0L;
-        if (request.options() != null && !request.options().isEmpty()) {
-            List<Long> optionIds = request.options().stream().map(SelectedItemOptionRequest::itemOptionId).toList();
-            Map<Long, ItemOption> itemOptionsMap = itemOptionRepository.findAllById(optionIds).stream()
-                    .collect(Collectors.toMap(ItemOption::getId, option -> option));
-
-            optionsTotalPrice = request.options().stream().mapToLong(optReq -> {
-                ItemOption option = itemOptionsMap.get(optReq.itemOptionId());
-                if (option == null) throw new OrderException(OrderErrorCode.ITEM_OPTION_NOT_FOUND);
-                return (long) option.getOptionPrice() * optReq.quantity();
-            }).sum();
-        }
-
-        long finalItemPrice = (itemPrice + optionsTotalPrice) * request.quantity();
-
-        return OrderItem.builder()
-                .itemType(request.itemType())
-                .beverageItemId(request.itemType() != ItemType.DESSERT ? request.itemId() : null)
-                .dessertItemId(request.itemType() == ItemType.DESSERT ? request.itemId() : null)
-                .quantity( request.quantity())
-                .itemName(itemName)
-                .itemPrice(itemPrice)
-                .finalItemPrice(finalItemPrice)
-                .shotQuantity(request.shotQuantity())
-                .selectedSize(request.selectedSizes())
-                .selectedTemperature(request.selectedTemperatures())
-                .build();
-    }
-
-    /**
-     * 주문번호를 생성합니다.
-     */
-    @Transactional
-    public String generateOrderNumber(OrderCreateRequest request) {
-        LocalDate today = LocalDate.now();
-        OrderDailyCounterId id = new OrderDailyCounterId(today, request.storeId());
-
-        OrderDailyCounter counter = orderDailyCounterRepository.findById(id)
-                .orElseGet(() -> new OrderDailyCounter(id, 0));
-
-        counter.increment();
-        orderDailyCounterRepository.save(counter);
-
-        return "A-" + counter.getCount();
-    }
 
     /**
      * [사용자용] 주문 상세 정보를 조회합니다.
      */
     public CustomerOrderDetailResponse getOrderDetail(Long loginMemberId, Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
+        Order order = getOrderOrThrow(orderId);
+        validateOrderOwner(order, loginMemberId);
 
+        List<Long> beverageIds = extractBeverageIds(order);
+        List<Long> dessertIds = extractDessertIds(order);
+        List<Long> optionIds = extractOptionIds(order);
+
+        Map<Long, BeverageItem> beverageMap = beverageItemService.getBeverageByIds(beverageIds)
+                .stream().collect(Collectors.toMap(BeverageItem::getId, item -> item));
+        Map<Long, DessertItem> dessertMap = dessertItemService.getDessertsByIds(dessertIds)
+                .stream().collect(Collectors.toMap(DessertItem::getId, item -> item));
+        Map<Long, ItemOption> optionMap = itemOptionService.getItemOptionsByIds(optionIds)
+                .stream().collect(Collectors.toMap(ItemOption::getId, option -> option));
+
+        return CustomerOrderDetailResponse.of(order, beverageMap, dessertMap, optionMap);
+    }
+
+    private Order getOrderOrThrow(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
+    }
+
+    private void validateOrderOwner(Order order, Long loginMemberId) {
         if (!order.getMember().getId().equals(loginMemberId)) {
             throw new OrderException(OrderErrorCode.FORBIDDEN_ACCESS_ORDER);
         }
+    }
 
-        List<Long> beverageIds = order.getOrderItems().stream()
+    private List<Long> extractBeverageIds(Order order) {
+        return order.getOrderItems().stream()
                 .filter(oi -> oi.getBeverageItemId() != null)
-                .map(OrderItem::getBeverageItemId).distinct().toList();
-        List<Long> dessertIds = order.getOrderItems().stream()
+                .map(OrderItem::getBeverageItemId)
+                .distinct()
+                .toList();
+    }
+
+    private List<Long> extractDessertIds(Order order) {
+        return order.getOrderItems().stream()
                 .filter(oi -> oi.getDessertItemId() != null)
-                .map(OrderItem::getDessertItemId).distinct().toList();
-        List<Long> optionIds = order.getOrderItems().stream()
+                .map(OrderItem::getDessertItemId)
+                .distinct()
+                .toList();
+    }
+
+    private List<Long> extractOptionIds(Order order) {
+        return order.getOrderItems().stream()
                 .flatMap(oi -> oi.getOrderItemOptions().stream())
-                .map(OrderItemOption::getItemOptionId).distinct().toList();
-
-        Map<Long, BeverageItem> beverageMap = beverageItemRepository.findAllById(beverageIds).stream()
-                .collect(Collectors.toMap(BeverageItem::getId, item -> item));
-        Map<Long, DessertItem> dessertMap = dessertItemRepository.findAllById(dessertIds).stream()
-                .collect(Collectors.toMap(DessertItem::getId, item -> item));
-        Map<Long, ItemOption> optionMap = itemOptionRepository.findAllById(optionIds).stream()
-                .collect(Collectors.toMap(ItemOption::getId, option -> option));
-
-        return CustomerOrderDetailResponse.of(order, beverageMap, dessertMap, optionMap);
+                .map(OrderItemOption::getItemOptionId)
+                .distinct()
+                .toList();
     }
 
     /**
