@@ -45,6 +45,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final OrderItemService orderItemService;
+    private final OrderItemOptionService orderItemOptionService;
     private final StoreRepository storeRepository;
     private final BeverageItemRepository beverageItemRepository;
     private final DessertItemRepository dessertItemRepository;
@@ -74,8 +75,7 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // List<OrderItem> 저장, OrderItem은 OrderId가 없으면 에러 발생
-        List <OrderItem> savedOrderItems = new ArrayList<>();
-        orderItemService.saveOrderItems(savedOrder.getId(), savedOrderItems);
+        orderItemService.saveOrderItems(savedOrder.getId(), orderItems);
 
         return savedOrder;
     }
@@ -147,6 +147,14 @@ public class OrderService {
 
         long finalItemPrice = (itemPrice + optionsTotalPrice) * request.quantity();
 
+        List<OrderItemOption> options=  request.options().stream().map(
+            (option) -> {return OrderItemOption.builder()
+                .itemOptionId(option.itemOptionId())
+                .quantity(option.quantity())
+                .build();
+            }
+        ).collect(Collectors.toList());
+
         return OrderItem.builder()
                 .itemType(request.itemType())
                 .beverageItemId(request.itemType() != ItemType.DESSERT ? request.itemId() : null)
@@ -158,6 +166,7 @@ public class OrderService {
                 .shotQuantity(request.shotQuantity())
                 .selectedSize(request.selectedSizes())
                 .selectedTemperature(request.selectedTemperatures())
+                .orderItemOptions(options)
                 .build();
     }
 
