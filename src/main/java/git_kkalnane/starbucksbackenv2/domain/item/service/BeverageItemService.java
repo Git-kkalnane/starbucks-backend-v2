@@ -15,4 +15,8 @@ public class BeverageItemService {
     public List<BeverageItem> getAllBeverageItems() {
         return beverageItemRepository.findAllWithSupportedSizes();
     }
+
+    public List<BeverageItem> getBeverageByIds(List<Long> ids) {
+        return beverageItemRepository.findAllById(ids);
+    }
 }
