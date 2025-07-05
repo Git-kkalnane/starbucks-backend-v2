@@ -30,8 +30,8 @@ public class PointCard extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
+    @OneToOne
+    @JoinColumn(name = "member_id", unique = true)
     private Member member;
 
     @OneToMany(mappedBy = "pointCard")
