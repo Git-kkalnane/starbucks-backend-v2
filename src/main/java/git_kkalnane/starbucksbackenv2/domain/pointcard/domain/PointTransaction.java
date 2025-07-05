@@ -23,5 +23,4 @@ public class PointTransaction extends git_kkalnane.starbucksbackenv2.global.enti
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
-    // Getters and Setters
 }

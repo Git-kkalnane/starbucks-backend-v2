@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface PointCardRepository extends JpaRepository<PointCard, Long> {
 
     boolean existsByMemberId(Long id);
+
 }

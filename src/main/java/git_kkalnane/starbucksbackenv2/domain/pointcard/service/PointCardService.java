@@ -40,4 +40,5 @@ public class PointCardService {
 
         return pointCardRepository.save(pointCard);
     }
+
 }

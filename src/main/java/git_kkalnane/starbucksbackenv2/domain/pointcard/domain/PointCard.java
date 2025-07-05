@@ -52,5 +52,4 @@ public class PointCard extends BaseTimeEntity {
     @Column(name = "point_amount", nullable = false)
     private Integer pointAmount;
 
-    // Getters and Setters
 }
