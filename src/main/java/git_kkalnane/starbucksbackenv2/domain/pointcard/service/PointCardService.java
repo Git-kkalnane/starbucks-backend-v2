@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointCardService {
 
     private final PointCardRepository pointCardRepository;
-    private final PointTransactionRepository pointTransactionRepository;
+    private final PointTransactionService pointTransactionService;
 
     private int initPointCardAmount = 0;
 
@@ -58,13 +58,12 @@ public class PointCardService {
             .orElseThrow(() -> new PointCardException(PointCardErrorCode.POINT_CARD_NOT_FOUND));
 
         pointCard.addPointAmount(amount);
-        PointTransaction transaction = PointTransaction.builder()
-            .pointCard(pointCard)
-            .payAmount((long) amount)
-            .type(PointTransactionType.DEPOSIT)
-            .description(getDescription(amount, PointTransactionType.DEPOSIT))
-            .build();
-        pointTransactionRepository.save(transaction);
+        pointTransactionService.createAndSaveTransaction(
+            pointCard,
+            amount,
+            PointTransactionType.DEPOSIT,
+            getDescription(amount, PointTransactionType.DEPOSIT)
+        );
         return pointCardRepository.save(pointCard);
     }
 
@@ -84,20 +83,19 @@ public class PointCardService {
         }
         
         pointCard.subtractPointAmount(amount);
-        PointTransaction transaction = PointTransaction.builder()
-            .pointCard(pointCard)
-            .payAmount((long) amount)
-            .type(PointTransactionType.WITHDRAWAL)
-            .description(getDescription(amount, PointTransactionType.WITHDRAWAL))
-            .build();
-        pointTransactionRepository.save(transaction);
+        pointTransactionService.createAndSaveTransaction(
+            pointCard,
+            amount,
+            PointTransactionType.WITHDRAWAL,
+            getDescription(amount, PointTransactionType.WITHDRAWAL)
+        );
         return pointCardRepository.save(pointCard);
     }
 
 
- private String getDescription(int amount, PointTransactionType type) {
-    return "" + amount + type.getKorean();
- }   
+    private String getDescription(int amount, PointTransactionType type) {
+        return "" + amount + type.getKorean();
+    }   
 
     /**
      * 결제 금액의 1%를 포인트로 적립하는 금액을 계산합니다.
