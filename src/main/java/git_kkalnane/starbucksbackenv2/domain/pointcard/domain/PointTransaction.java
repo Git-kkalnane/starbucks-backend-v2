@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
-import git_kkalnane.starbucksbackenv2.domain.paycard.TransactionType;
+import git_kkalnane.starbucksbackenv2.domain.pointcard.common.PointTransactionType;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,7 +15,7 @@ import jakarta.persistence.*;
 public class PointTransaction extends BaseTimeEntity {
 
     @Builder
-    public PointTransaction(PointCard pointCard, Long payAmount, String description, TransactionType type) {
+    public PointTransaction(PointCard pointCard, Long payAmount, String description, PointTransactionType type) {
         this.pointCard = pointCard;
         this.payAmount = payAmount;
         this.description = description;
@@ -36,7 +36,7 @@ public class PointTransaction extends BaseTimeEntity {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private TransactionType type;
+    private PointTransactionType type;
 
 
 }
