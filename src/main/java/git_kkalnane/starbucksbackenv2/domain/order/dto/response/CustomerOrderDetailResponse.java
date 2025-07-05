@@ -41,7 +41,7 @@ public record CustomerOrderDetailResponse(
         }
     }
 
-    private record OrderItemDetail(Long itemId, String itemName, List<OptionDetail> options, Long itemPrice, Long quantity, String imgUrl) {
+    private record OrderItemDetail(Long itemId, String itemName, List<OptionDetail> options, Long itemPrice, Integer quantity, String imgUrl) {
         public static OrderItemDetail of(OrderItem orderItem, Map<Long, BeverageItem> beverageMap, Map<Long, DessertItem> dessertMap, Map<Long, ItemOption> optionMap) {
             String imageUrl = null;
             Long itemId;
@@ -50,7 +50,7 @@ public record CustomerOrderDetailResponse(
                 itemId = orderItem.getBeverageItemId();
                 BeverageItem beverage = beverageMap.get(itemId);
                 if (beverage != null) {
-                    imageUrl = (orderItem.getSelectedTemperatures() == BeverageTemperatureOption.HOT)
+                    imageUrl = (orderItem.getSelectedTemperature() == BeverageTemperatureOption.HOT)
                             ? beverage.getHotImageUrl() : beverage.getIceImageUrl();
                 }
             } else {

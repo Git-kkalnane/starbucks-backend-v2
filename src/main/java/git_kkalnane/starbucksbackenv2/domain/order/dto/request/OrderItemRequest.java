@@ -21,8 +21,8 @@ import java.util.List;
 public record OrderItemRequest(
         @NotNull Long itemId,
         @NotNull ItemType itemType,
-        @NotNull @Positive Long quantity,
-        Long shotQuantity,
+        @NotNull @Positive Integer quantity,
+        Integer shotQuantity,
         BeverageSizeOption selectedSizes,
         BeverageTemperatureOption selectedTemperatures,
         List<SelectedItemOptionRequest> options

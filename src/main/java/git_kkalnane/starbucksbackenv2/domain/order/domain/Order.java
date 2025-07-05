@@ -1,6 +1,7 @@
 package git_kkalnane.starbucksbackenv2.domain.order.domain;
 
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
+import git_kkalnane.starbucksbackenv2.domain.order.dto.request.OrderCreateRequest;
 import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
 import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -16,24 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseTimeEntity {
-
-    /**
-     * Order 엔티티 생성 static 팩토리 메서드
-     */
-    public static Order createOrderEntity(Member member, Store store, String orderNumber, Long totalPrice, git_kkalnane.starbucksbackenv2.domain.order.dto.request.OrderCreateRequest request) {
-        return Order.builder()
-                .member(member)
-                .store(store)
-                .orderNumber(orderNumber)
-                .totalPrice(totalPrice)
-                .status(OrderStatus.PLACED)
-                .pickupType(request.pickupType())
-                .requestMemo(request.requestMemo())
-                .expectedPickupTime(java.time.LocalDateTime.now().plusMinutes(10))
-                .cardNumber(request.cardNumber())
-                .build();
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -74,5 +57,23 @@ public class Order extends BaseTimeEntity {
 
     public void updateStatus(OrderStatus newStatus) {
         this.status = newStatus;
+    }
+
+    /**
+     * 새로운 주문을 생성할때 사용하는  static 팩토리 메서드
+     * OrderService.creatOrder()에서 사용됩니다.
+     */
+    public static Order createNewOrder(Member member, Store store, String orderNumber, Long totalPrice,  OrderCreateRequest request) {
+        return Order.builder()
+                .member(member)
+                .store(store)
+                .orderNumber(orderNumber)
+                .totalPrice(totalPrice)
+                .status(OrderStatus.PLACED)
+                .pickupType(request.pickupType())
+                .requestMemo(request.requestMemo())
+                .expectedPickupTime(java.time.LocalDateTime.now().plusMinutes(10))
+                .cardNumber(request.cardNumber())
+                .build();
     }
 }

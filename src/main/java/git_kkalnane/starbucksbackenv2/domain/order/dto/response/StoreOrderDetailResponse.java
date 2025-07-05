@@ -42,7 +42,7 @@ public record StoreOrderDetailResponse(
      */
     private record OrderItemSummary(
             String itemName,
-            Long quantity
+            Integer quantity
     ) {
         public static OrderItemSummary from(OrderItem orderItem) {
             return new OrderItemSummary(

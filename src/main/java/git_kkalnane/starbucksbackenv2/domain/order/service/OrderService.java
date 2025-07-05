@@ -22,6 +22,7 @@ import git_kkalnane.starbucksbackenv2.domain.order.repository.OrderRepository;
 import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
 import git_kkalnane.starbucksbackenv2.domain.store.dto.StoreSimpleDto;
 import git_kkalnane.starbucksbackenv2.domain.store.repository.StoreRepository;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,12 +44,12 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
+    private final OrderItemService orderItemService;
     private final StoreRepository storeRepository;
     private final BeverageItemRepository beverageItemRepository;
     private final DessertItemRepository dessertItemRepository;
     private final ItemOptionRepository itemOptionRepository;
     private final OrderDailyCounterRepository orderDailyCounterRepository;
-//    private final PaymentService paymentService;
 
     // ====== 주문 생성 ======
     /**
@@ -67,11 +67,19 @@ public class OrderService {
         Long calculatedTotalPrice = calculateTotalPrice(orderItems);
         String orderNumber = generateOrderNumber(request);
         Store minimalStore = createMinimalStore(store);
-        Order order = Order.createOrderEntity(member, minimalStore, orderNumber, calculatedTotalPrice, request);
-        Order savedOrder = orderRepository.save(order);
+        Order order = Order.createNewOrder(member, minimalStore, orderNumber, calculatedTotalPrice,request);
         // paymentService.processPayment(savedOrder);
+
+        // Order 저장
+        Order savedOrder = orderRepository.save(order);
+
+        // List<OrderItem> 저장, OrderItem은 OrderId가 없으면 에러 발생
+        List <OrderItem> savedOrderItems = new ArrayList<>();
+        orderItemService.saveOrderItems(savedOrder.getId(), savedOrderItems);
+
         return savedOrder;
     }
+
 
     // ====== Private Helper Methods ======
     private Member getMemberOrThrow(Long memberId) {
@@ -143,13 +151,13 @@ public class OrderService {
                 .itemType(request.itemType())
                 .beverageItemId(request.itemType() != ItemType.DESSERT ? request.itemId() : null)
                 .dessertItemId(request.itemType() == ItemType.DESSERT ? request.itemId() : null)
-                .quantity(request.quantity())
+                .quantity( request.quantity())
                 .itemName(itemName)
                 .itemPrice(itemPrice)
                 .finalItemPrice(finalItemPrice)
                 .shotQuantity(request.shotQuantity())
-                .selectedSizes(request.selectedSizes())
-                .selectedTemperatures(request.selectedTemperatures())
+                .selectedSize(request.selectedSizes())
+                .selectedTemperature(request.selectedTemperatures())
                 .build();
     }
 
