@@ -36,6 +36,7 @@ public class MemberSignupEventListener {
         Member member = event.getMember();
         createPayCardForMember(member);
         createPointCardForMember(member);
+
     }
 
     /**
@@ -73,6 +74,7 @@ public class MemberSignupEventListener {
         } catch (Exception e) {
             log.error("PointCard 생성 중 예상치 못한 오류가 발생했습니다. 회원: {}", member.getEmail(), e);
         }
+
     }
 }
 
