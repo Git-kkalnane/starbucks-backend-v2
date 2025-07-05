@@ -4,7 +4,10 @@ import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.paycard.common.exception.PayCardErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.paycard.common.exception.PayCardException;
 import git_kkalnane.starbucksbackenv2.domain.pointcard.domain.PointCard;
+import git_kkalnane.starbucksbackenv2.domain.pointcard.domain.PointTransaction;
 import git_kkalnane.starbucksbackenv2.domain.pointcard.repository.PointCardRepository;
+import git_kkalnane.starbucksbackenv2.domain.pointcard.repository.PointTransactionRepository;
+import git_kkalnane.starbucksbackenv2.domain.paycard.TransactionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PointCardService {
     private final PointCardRepository pointCardRepository;
+    private final PointTransactionRepository pointTransactionRepository;
 
     private int initPointCardAmount=0;
 
@@ -38,6 +42,44 @@ public class PointCardService {
            .member(member)
         .build();
 
+        return pointCardRepository.save(pointCard);
+    }
+    
+    /**
+     * 포인트 입금 메서드
+     * @param pointCard 입금 대상 카드
+     * @param amount 입금할 포인트
+     * @return 입금 후 PointCard
+     */
+    @Transactional
+    public PointCard addPoint(PointCard pointCard, int amount) {
+        pointCard.addPointAmount(amount);
+        PointTransaction transaction = PointTransaction.builder()
+            .pointCard(pointCard)
+            .payAmount((long) amount)
+            .type(TransactionType.DEPOSIT)
+            .description("포인트 입금")
+            .build();
+        pointTransactionRepository.save(transaction);
+        return pointCardRepository.save(pointCard);
+    }
+
+    /**
+     * 포인트 출금 메서드
+     * @param pointCard 출금 대상 카드
+     * @param amount 출금할 포인트
+     * @return 출금 후 PointCard
+     */
+    @Transactional
+    public PointCard subtractPoint(PointCard pointCard, int amount) {
+        pointCard.subtractPointAmount(amount);
+        PointTransaction transaction = PointTransaction.builder()
+            .pointCard(pointCard)
+            .payAmount((long) amount)
+            .type(TransactionType.WITHDRAWAL)
+            .description("포인트 출금")
+            .build();
+        pointTransactionRepository.save(transaction);
         return pointCardRepository.save(pointCard);
     }
 

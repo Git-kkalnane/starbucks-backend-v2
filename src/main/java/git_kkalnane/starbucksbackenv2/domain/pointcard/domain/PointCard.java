@@ -26,15 +26,6 @@ public class PointCard extends BaseTimeEntity {
         this.pointAmount = pointAmount;
     }
 
-    @Builder
-    public PointCard(PointCard pointCard) {
-        this.id = pointCard.id;
-        this.member = pointCard.member;
-        this.pointTransactions = pointCard.pointTransactions;
-        this.cardNumber = pointCard.cardNumber;
-        this.pointAmount = pointCard.pointAmount;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -51,5 +42,28 @@ public class PointCard extends BaseTimeEntity {
 
     @Column(name = "point_amount", nullable = false)
     private Integer pointAmount;
+
+    /**
+     * 포인트 입금(증가)
+     */
+    public void addPointAmount(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("입금 금액은 0보다 커야 합니다.");
+        }
+        this.pointAmount += amount;
+    }
+
+    /**
+     * 포인트 출금(감소)
+     */
+    public void subtractPointAmount(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("출금 금액은 0보다 커야 합니다.");
+        }
+        if (this.pointAmount < amount) {
+            throw new IllegalArgumentException("포인트 잔액이 부족합니다.");
+        }
+        this.pointAmount -= amount;
+    }
 
 }
