@@ -59,7 +59,7 @@ public class CartController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_CODE));
+                .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_DELETED));
     }
 
 }
