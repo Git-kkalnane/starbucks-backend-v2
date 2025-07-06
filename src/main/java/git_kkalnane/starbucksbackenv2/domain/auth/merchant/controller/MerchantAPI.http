@@ -1,0 +1,22 @@
+@host = localhost
+@port = 8080
+@baseUrl = http://{{host}}:{{port}}/api/v1
+
+### 매장 회원가입
+POST {{baseUrl}}/merchant/signup
+Content-Type: application/json
+
+{
+  "name": "테스트매장",
+  "email": "test@test.com",
+  "password": "Tset1234!!"
+}
+
+### 매장 로그인
+POST {{baseUrl}}/merchant/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "Tset1234!!"
+}
