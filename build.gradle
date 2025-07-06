@@ -44,7 +44,6 @@ dependencies {
 
     // BCrypt(암호화) 라이브러리
     implementation 'org.mindrot:jbcrypt:0.4'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     //QueryDSL
     // query dsl 버전 명시해야 jakarta사용 (javax X)

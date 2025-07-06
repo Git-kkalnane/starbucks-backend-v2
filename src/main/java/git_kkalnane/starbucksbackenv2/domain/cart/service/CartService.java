@@ -70,13 +70,13 @@ public class CartService {
 
         CartItem cartItem = CartItem.builder()
                 .cart(cart)
-                .itemType((ItemType) cartItemDto.itemType())
+                .itemType(cartItemDto.itemType())
                 .quantity(cartItemDto.quantity())
                 .beverageItemId(beverageItemId)
                 .dessertItemId(dessertItemId)
                 .imageUrl(cartItemDto.image())
-                .selectedSizes((BeverageSizeOption) cartItemDto.cupSize())
-                .selectedTemperatures((BeverageTemperatureOption) cartItemDto.temperatureOption())
+                .selectedSizes(cartItemDto.cupSize())
+                .selectedTemperatures(cartItemDto.temperatureOption())
                 .itemPrice(totalPrice)
                 .finalItemPrice(totalPrice)
                 .build();
