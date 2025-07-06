@@ -8,7 +8,6 @@ import git_kkalnane.starbucksbackenv2.domain.paycard.domain.PayCard;
 import git_kkalnane.starbucksbackenv2.domain.pointcard.domain.PointCard;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,12 +15,27 @@ import lombok.ToString;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
-@AllArgsConstructor
 @Getter
 @ToString
 @Table(name = "members")
 public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+    @Builder
+    Member(Long id, String name, String nickname, String email, String password,
+           java.util.List<Inquiry> inquiries, java.util.List<Cart> carts, java.util.List<PayCard> payCards,
+           java.util.List<PointCard> pointCards, java.util.List<Order> orders, java.util.List<Notification> notifications) {
+        this.id = id;
+        this.name = name;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.inquiries = inquiries;
+        this.carts = carts;
+        this.payCards = payCards;
+        this.pointCards = pointCards;
+        this.orders = orders;
+        this.notifications = notifications;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
