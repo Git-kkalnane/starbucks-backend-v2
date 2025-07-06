@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
 /**
  * ItemOption
  * BeverageItem에서만 사용됩니다.
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
  * @since 2025-07-02
  */
 @Entity
+@Getter
 @Table(name = "item_options")
 @Getter
 @NoArgsConstructor
@@ -22,7 +24,7 @@ public class ItemOption extends git_kkalnane.starbucksbackenv2.global.entity.Bas
     private Long id;
 
     @Column(name = "item_id")
-    private Long itemId; // 현재 기획은 BeverageItem.id만 적용
+    private Long itemId;
     @Column(name = "name", length = 50)
     private String name;
 
