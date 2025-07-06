@@ -53,7 +53,14 @@ public class CartService {
                 ? cartItemDto.cartItemOptions().stream().map(CartItemOptionDto::itemOptionId).toList()
                 : List.of();
 
-        Long totalPrice = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionIds);
+        Long totalPrice = 0L;
+
+        if(cartItemDto.itemType() == BEVERAGE) {
+            totalPrice = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionIds);
+        } else {
+            totalPrice = cartQueryRepository.calculatePrice(cartItemDto.itemId());
+        }
+
 
         Long beverageItemId = null, dessertItemId = null;
 
@@ -94,7 +101,6 @@ public class CartService {
                     .toList();
             cartItemOptionRepository.saveAll(options);
 
-
             optionDtos = options.stream()
                     .map(option -> new CartItemOptionDto(
                             option.getId(),
@@ -115,9 +121,21 @@ public class CartService {
                 cartItem.getQuantity(),
                 cartItemDto.priceWithOptions()
         );
+    }
 
+    @Transactional
+    public Long deleteCartItem(Long cartItemId, Long memberId) {
 
+        Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(
+                () -> new CartException(CartErrorCode.CART_NOT_FOUND));
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(
+                () -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
 
+        if(!cartItem.getCart().getId().equals(cart.getId())) {
+            throw new CartException(CartErrorCode.CART_INVALID);}
+
+        cartItemRepository.deleteById(cartItemId);
+        return cartItem.getId();
     }
 
 }

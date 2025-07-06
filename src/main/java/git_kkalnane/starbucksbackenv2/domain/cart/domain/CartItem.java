@@ -17,6 +17,7 @@ import java.util.List;
 @Builder
 public class CartItem extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -58,7 +59,6 @@ public class CartItem extends BaseTimeEntity {
 
     @Column(name = "image_url")
     private String imageUrl;
-
 
     // Getters and Setters
 }
