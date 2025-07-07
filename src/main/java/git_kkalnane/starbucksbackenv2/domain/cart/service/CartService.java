@@ -44,7 +44,7 @@ public class CartService {
      */
     @Transactional
     public CartItemResponse addCartItem(Long memberId, CartItemDto cartItemDto) {
-        Member member = validAndCalculatorService.findByMemberId(memberId);
+        Member member = validAndCalculatorService.findByMemberId(memberId); //TODO : Member 사용 X 후에 로직 추가
         Cart cart = validAndCalculatorService.findCartByMemberId(memberId);
 
         Long singleTotal = validAndCalculatorService.calculateSingleTotal(cartItemDto);
@@ -59,17 +59,16 @@ public class CartService {
 
 
     @Transactional
-    public ModifyCartItemResponse modifyCartItem(ModifyCartItemDto dto, Long memberId) {
-        Cart cart = cartRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new CartException(CartErrorCode.CART_NOT_FOUND));
-        CartItem cartItem = cartItemRepository.findById(dto.cartItemId())
-                .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
+    public ModifyCartItemResponse modifyCartItem(ModifyCartItemDto modifyCartItemDto, Long memberId) {
+
+        Cart cart = validAndCalculatorService.findCartByMemberId(memberId); //TODO : Cart 검증 로직 후에 추가하겠습니다.
+        CartItem cartItem = validAndCalculatorService.findCartItemByCartId(modifyCartItemDto.cartItemId());
       
-        cartItem.changeQuantity(dto.changeQuantity());
+        cartItem.changeQuantity(modifyCartItemDto.changeQuantity());
 
         Long finalPrice;
         if (cartItem.getItemType() == ItemType.DESSERT) {
-            finalPrice = cartItem.getItemPrice() * dto.changeQuantity();
+            finalPrice = cartItem.getItemPrice() * modifyCartItemDto.changeQuantity();
         } else {
             List<CartItemOption> savedOpts = cartItemOptionRepository.findAllByCartItemId(cartItem.getId());
             List<CartItemOptionDto> optDtos = savedOpts.stream()
@@ -83,7 +82,7 @@ public class CartService {
 
             Long singleTotal = cartQueryRepository.calculateTotalPriceWithOption(
                     cartItem.getBeverageItemId(), optDtos);
-            finalPrice = singleTotal * dto.changeQuantity();
+            finalPrice = singleTotal * modifyCartItemDto.changeQuantity();
         }
         cartItem.setFinalItemPrice(finalPrice);
 
