@@ -116,6 +116,11 @@ public class CartService {
 
     }
 
+    /**
+     * //TODO : 조회 서비스 로직이 너무 많은 책임을 가지고 있는거같아, 추후에 간소화 예정
+     *  전과 같이 Dto를 활용하여, memberId 별로 1개의 카트를 가지고 있으니,
+     *  memberId에 해당하는 cart에 cartItem을 조회해오는 로직
+     */
     @Transactional
     public CheckCartItemResponse getCartItem(Long memberId) {
 
