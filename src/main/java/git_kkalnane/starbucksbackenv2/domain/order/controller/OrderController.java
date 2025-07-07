@@ -32,7 +32,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/orders")
+@RequestMapping
 @Tag(name = "Order", description = "주문 관련 API")
 public class OrderController {
 
@@ -45,7 +45,7 @@ public class OrderController {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
             @ApiResponse(responseCode = "404", description = "사용자, 매장 또는 상품을 찾을 수 없음")
     })
-    @PostMapping
+    @PostMapping("/orders")
     public ResponseEntity<SuccessResponse<OrderCreateResponse>> createOrder(
             @RequestAttribute(name = "memberId") Long memberId,
             @Parameter(description = "주문에 필요한 정보") @Valid @RequestBody OrderCreateRequest request) {
@@ -67,12 +67,12 @@ public class OrderController {
             @ApiResponse(responseCode = "403", description = "해당 주문에 접근 권한 없음"),
             @ApiResponse(responseCode = "404", description = "주문 찾을 수 없음")
     })
-    @GetMapping("/{orderId}")
-    public ResponseEntity<SuccessResponse<CustomerOrderDetailResponse>> getOrderDetail(
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<SuccessResponse<OrderDetailResponse>> getOrderDetail(
             @RequestAttribute(name = "memberId") Long loginMemberId,
             @Parameter(description = "조회할 주문의 ID") @PathVariable Long orderId) {
 
-        CustomerOrderDetailResponse responseDto = orderService.getOrderDetail(loginMemberId, orderId);
+        OrderDetailResponse responseDto = orderService.getOrderDetail(loginMemberId, orderId);
 
         return ResponseEntity
                 .ok(SuccessResponse.of(OrderSuccessCode.ORDER_DETAIL_VIEWED, responseDto));
@@ -83,7 +83,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
-    @GetMapping("/me/current")
+    @GetMapping("/orders/me/current")
     public ResponseEntity<SuccessResponse<List<CustomerCurrentOrderResponse>>> getCurrentOrders(
             @RequestAttribute(name = "memberId") Long memberId) {
 
@@ -98,7 +98,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "과거 주문 내역 조회 성공"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
-    @GetMapping("/me/history")
+    @GetMapping("/orders/me/history")
     public ResponseEntity<SuccessResponse<CustomerOrderHistoryListResponse>> getMyOrderHistory(
             @RequestAttribute(name = "memberId") Long memberId,
             @Parameter(hidden = true)
@@ -117,7 +117,7 @@ public class OrderController {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 (매장)"),
             @ApiResponse(responseCode = "404", description = "매장을 찾을 수 없음")
     })
-    @GetMapping("/store/current")
+    @GetMapping("/merchant/{storeId}/orders/current")
     public ResponseEntity<SuccessResponse<List<StoreCurrentOrderResponse>>> getStoreCurrentOrders(
             @RequestAttribute(name = "storeId") Long storeId) {
 
@@ -135,14 +135,12 @@ public class OrderController {
             @ApiResponse(responseCode = "403", description = "해당 주문에 대한 접근 권한 없음"),
             @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없음")
     })
-    @GetMapping("/store/orders/{orderId}")
-    public ResponseEntity<SuccessResponse<StoreOrderDetailResponse>> getStoreOrderDetail(
-            @RequestAttribute(name = "storeId") Long storeId,
+    @GetMapping("/merchant/{storeId}/orders/{orderId}")
+    public ResponseEntity<SuccessResponse<OrderDetailResponse>> getStoreOrderDetail(
+            @Parameter(description = "주문이 속한 매장의 ID") @PathVariable Long storeId,
             @Parameter(description = "조회할 주문의 ID") @PathVariable Long orderId
     ) {
-        Order order = orderService.getStoreOrderDetail(storeId, orderId);
-
-        StoreOrderDetailResponse responseDto = StoreOrderDetailResponse.from(order);
+        OrderDetailResponse responseDto = orderService.getStoreOrderDetail(storeId, orderId);
 
         return ResponseEntity
                 .ok(SuccessResponse.of(OrderSuccessCode.STORE_ORDER_DETAIL_VIEWED, responseDto));
@@ -155,7 +153,7 @@ public class OrderController {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자 (매장)"),
             @ApiResponse(responseCode = "404", description = "매장을 찾을 수 없음")
     })
-    @GetMapping("/store/history")
+    @GetMapping("/merchant/{storeId}/orders/history")
     public ResponseEntity<SuccessResponse<StoreOrderHistoryListResponse>> getStoreOrderHistory(
             @RequestAttribute(name = "storeId") Long storeId,
             @Parameter(hidden = true)
@@ -176,9 +174,9 @@ public class OrderController {
             @ApiResponse(responseCode = "403", description = "해당 주문에 대한 접근 권한 없음"),
             @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없음")
     })
-    @PatchMapping("/store/orders/{orderId}/status")
+    @PatchMapping("/merchant/{storeId}/orders/{orderId}/status")
     public ResponseEntity<SuccessResponse<?>> updateOrderStatus(
-            @RequestAttribute(name = "storeId") Long storeId,
+            @Parameter(description = "주문이 속한 매장의 ID") @PathVariable Long storeId,
             @Parameter(description = "상태를 변경할 주문의 ID") @PathVariable Long orderId,
             @Parameter(description = "새로운 주문 상태 정보") @Valid @RequestBody StoreOrderStatusUpdateRequest request
     ) {
