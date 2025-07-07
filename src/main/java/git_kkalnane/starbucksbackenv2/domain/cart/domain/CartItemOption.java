@@ -15,14 +15,15 @@ public class CartItemOption extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "cart_item_id")
-    private Long cartItemId;
-
     @Column(name = "item_option_id")
     private Long itemOptionId;
 
     @Column(name = "quantity")
     private Long quantity;
+
+    @ManyToOne
+    @JoinColumn(name = "cart_item_id")
+    private CartItem cartItem;
 
     // Getters and Setters
 }

@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.util.List;
 
+
 @Entity
 @Table(name = "cart_items")
 @Getter
@@ -59,6 +60,9 @@ public class CartItem extends BaseTimeEntity {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    @OneToMany(mappedBy = "cartItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItemOption> cartItemOption;
 
     public void changeQuantity(int changeQuantity) {
         this.quantity = changeQuantity;

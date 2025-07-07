@@ -7,6 +7,7 @@ import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItem;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItemOption;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.DeleteCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.ModifyCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.CartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.ModifyCartItemResponse;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,7 +54,7 @@ public class CartService {
         CartItem cartItem = cartItemCreateService.createCartItem(cart, cartItemDto, singleTotal);
         cartItem = cartItemRepository.save(cartItem);
 
-        cartOptionService.saveCartItemOptions(cartItem.getId(), cartItemDto.cartItemOptions());
+        cartOptionService.saveCartItemOptions(cartItem, cartItemDto.cartItemOptions());
 
         return CartItemResponse.of(cartItem, cartItemDto.cartItemOptions());
     }
@@ -74,7 +76,7 @@ public class CartService {
             List<CartItemOptionDto> optDtos = savedOpts.stream()
                     .map(option -> new CartItemOptionDto(
                             option.getId(),
-                            option.getCartItemId(),
+                            option.getCartItem().getId(),
                             option.getItemOptionId(),
                             option.getQuantity(),
                             null))
@@ -95,18 +97,21 @@ public class CartService {
     }
 
     @Transactional
-    public Long deleteCartItem(Long cartItemId, Long memberId) {
+    public List<Long> deleteCartItem(DeleteCartItemDto deleteCartItemDto, Long memberId) {
+        Cart cart = validAndCalculatorService.findCartByMemberId(memberId);
 
-        Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(
-                () -> new CartException(CartErrorCode.CART_NOT_FOUND));
-        CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(
-                () -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
+        List<Long> deletedIds = new ArrayList<>();
 
-        if(!cartItem.getCart().getId().equals(cart.getId())) {
-            throw new CartException(CartErrorCode.CART_INVALID);}
+        for(Long cartItemId : deleteCartItemDto.cartItemId()) {
+            CartItem cartItem = validAndCalculatorService.findCartItemByCartId(cartItemId);
 
-        cartItemRepository.deleteById(cartItemId);
-        return cartItem.getId();
+            if(!cartItem.getCart().getId().equals(cart.getId())) {
+                throw new CartException(CartErrorCode.CART_INVALID);}
+
+            cartItemRepository.deleteById(cartItemId);
+            deletedIds.add(cartItemId);
+        }
+        return deletedIds;
 
     }
 
