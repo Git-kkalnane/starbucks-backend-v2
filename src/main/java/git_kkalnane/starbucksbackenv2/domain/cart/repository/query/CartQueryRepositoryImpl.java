@@ -76,7 +76,7 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
         return basePrice + totalOptionPrice;
     }
 
-        @Override
+    @Override
     public Long calculatePrice(Long itemId) {
         QDessertItem dessertItem = QDessertItem.dessertItem;
 
@@ -88,11 +88,6 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
 
         return price == null ? 0L : price;
         }
-
-        long safeAdditionalPrice = (additionalPrice != null) ? additionalPrice : 0L;
-
-        return basePrice + totalOptionPrice;
-    }
-
 }
+
 
