@@ -68,11 +68,11 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "주문 찾을 수 없음")
     })
     @GetMapping("/orders/{orderId}")
-    public ResponseEntity<SuccessResponse<CustomerOrderDetailResponse>> getOrderDetail(
+    public ResponseEntity<SuccessResponse<OrderDetailResponse>> getOrderDetail(
             @RequestAttribute(name = "memberId") Long loginMemberId,
             @Parameter(description = "조회할 주문의 ID") @PathVariable Long orderId) {
 
-        CustomerOrderDetailResponse responseDto = orderService.getOrderDetail(loginMemberId, orderId);
+        OrderDetailResponse responseDto = orderService.getOrderDetail(loginMemberId, orderId);
 
         return ResponseEntity
                 .ok(SuccessResponse.of(OrderSuccessCode.ORDER_DETAIL_VIEWED, responseDto));
@@ -136,13 +136,11 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없음")
     })
     @GetMapping("/stores/{storeId}/orders/{orderId}")
-    public ResponseEntity<SuccessResponse<StoreOrderDetailResponse>> getStoreOrderDetail(
-            @RequestAttribute(name = "storeId") Long storeId,
+    public ResponseEntity<SuccessResponse<OrderDetailResponse>> getStoreOrderDetail(
+            @Parameter(description = "주문이 속한 매장의 ID") @PathVariable Long storeId,
             @Parameter(description = "조회할 주문의 ID") @PathVariable Long orderId
     ) {
-        Order order = orderService.getStoreOrderDetail(storeId, orderId);
-
-        StoreOrderDetailResponse responseDto = StoreOrderDetailResponse.from(order);
+        OrderDetailResponse responseDto = orderService.getStoreOrderDetail(storeId, orderId);
 
         return ResponseEntity
                 .ok(SuccessResponse.of(OrderSuccessCode.STORE_ORDER_DETAIL_VIEWED, responseDto));
@@ -178,7 +176,7 @@ public class OrderController {
     })
     @PatchMapping("/stores/{storeId}/orders/{orderId}/status")
     public ResponseEntity<SuccessResponse<?>> updateOrderStatus(
-            @RequestAttribute(name = "storeId") Long storeId,
+            @Parameter(description = "주문이 속한 매장의 ID") @PathVariable Long storeId,
             @Parameter(description = "상태를 변경할 주문의 ID") @PathVariable Long orderId,
             @Parameter(description = "새로운 주문 상태 정보") @Valid @RequestBody StoreOrderStatusUpdateRequest request
     ) {
