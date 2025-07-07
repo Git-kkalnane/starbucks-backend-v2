@@ -34,58 +34,29 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
     private final CartItemOptionRepository cartItemOptionRepository;
     private final CartQueryRepository cartQueryRepository;
+    private final ValidAndCalculatorService validAndCalculatorService;
+    private final CartOptionService cartOptionService;
+    private final CartItemCreateService cartItemCreateService;
 
+    /**
+     * 서비스 로직이 너무 길어져, 클래스를 따로 만들어 두어 간소화를 해보았습니다.
+     * 자세한 설명은 클래스파일마다 주석 달아놓았습니다!
+     */
     @Transactional
     public CartItemResponse addCartItem(Long memberId, CartItemDto cartItemDto) {
+        Member member = validAndCalculatorService.findByMemberId(memberId);
+        Cart cart = validAndCalculatorService.findCartByMemberId(memberId);
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        Cart cart = cartRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new CartException(CartErrorCode.CART_NOT_FOUND));
+        Long singleTotal = validAndCalculatorService.calculateSingleTotal(cartItemDto);
 
-
-        List<CartItemOptionDto> optionDtos = cartItemDto.cartItemOptions() != null
-                ? cartItemDto.cartItemOptions()
-                : List.of();
-
-        Long singleTotal = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionDtos);
-
-        Long beverageItemId = null, dessertItemId = null;
-        if (cartItemDto.itemType() == ItemType.BEVERAGE) {
-            beverageItemId = cartItemDto.itemId();
-        } else if (cartItemDto.itemType() == ItemType.DESSERT) {
-            dessertItemId = cartItemDto.itemId();
-        } else {
-            throw new CartException(CartErrorCode.INVALID_TYPE);
-        }
-
-        CartItem cartItem = CartItem.builder()
-                .cart(cart)
-                .itemType(cartItemDto.itemType())
-                .quantity(cartItemDto.quantity())
-                .beverageItemId(beverageItemId)
-                .dessertItemId(dessertItemId)
-                .imageUrl(cartItemDto.image())
-                .selectedSizes(cartItemDto.cupSize())
-                .selectedTemperatures(cartItemDto.temperatureOption())
-                .itemPrice(singleTotal)
-                .finalItemPrice(singleTotal * cartItemDto.quantity())
-                .build();
+        CartItem cartItem = cartItemCreateService.createCartItem(cart, cartItemDto, singleTotal);
         cartItem = cartItemRepository.save(cartItem);
 
-        if (!optionDtos.isEmpty()) {
-            List<CartItemOption> options = optionDtos.stream()
-                    .map(option -> CartItemOption.builder()
-                            .cartItemId(option.cartItemId())
-                            .itemOptionId(option.itemOptionId())
-                            .quantity(option.quantity())
-                            .build())
-                    .toList();
-            cartItemOptionRepository.saveAll(options);
-        }
+        cartOptionService.saveCartItemOptions(cartItem.getId(), cartItemDto.cartItemOptions());
 
-        return CartItemResponse.of(cartItem, optionDtos);
+        return CartItemResponse.of(cartItem, cartItemDto.cartItemOptions());
     }
+
 
     @Transactional
     public ModifyCartItemResponse modifyCartItem(ModifyCartItemDto dto, Long memberId) {
