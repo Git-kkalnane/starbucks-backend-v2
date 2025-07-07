@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "item_options")
-@Getter
 @NoArgsConstructor
 public class ItemOption extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
     @Id
