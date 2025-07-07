@@ -5,16 +5,20 @@ import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartException
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.Cart;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItem;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItemOption;
-import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemDto;
-import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
-import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.ModifyCartItemDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.*;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.CartItemResponse;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.CheckCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.ModifyCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartItemOptionRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.query.CartQueryRepository;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageItem;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
+import git_kkalnane.starbucksbackenv2.domain.item.repository.ItemOptionRepository;
 import git_kkalnane.starbucksbackenv2.domain.member.common.exception.MemberErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.member.common.exception.MemberException;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
@@ -37,6 +41,7 @@ public class CartService {
     private final ValidAndCalculatorService validAndCalculatorService;
     private final CartOptionService cartOptionService;
     private final CartItemCreateService cartItemCreateService;
+    private final ItemOptionRepository itemOptionRepository;
 
     /**
      * 서비스 로직이 너무 길어져, 클래스를 따로 만들어 두어 간소화를 해보았습니다.
@@ -64,7 +69,7 @@ public class CartService {
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_NOT_FOUND));
         CartItem cartItem = cartItemRepository.findById(dto.cartItemId())
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
-      
+
         cartItem.changeQuantity(dto.changeQuantity());
 
         Long finalPrice;
@@ -110,6 +115,61 @@ public class CartService {
         return cartItem.getId();
 
     }
+
+    @Transactional
+    public CheckCartItemResponse getCartItem(Long memberId) {
+
+        Cart cart = validAndCalculatorService.findCartByMemberId(memberId);
+        List<CartItem> cartItems = cartItemRepository.findAllByCartId(cart.getId());
+
+        List<CheckCartItemDto> checkCartItemDtos = cartItems.stream()
+                .map(cartItem -> {
+                    ItemType itemType = cartItem.getItemType();
+                    String itemName;
+                    String imageUrl = cartItem.getImageUrl();
+
+                    if (itemType == ItemType.BEVERAGE) {
+                        BeverageItem beverageItem = validAndCalculatorService.findBeverageItemByItemId(cartItem.getBeverageItemId());
+                        itemName = beverageItem.getItemNameKo();
+
+                        // 온도에 따른 이미지 처리 로직 간소화
+                        imageUrl = (cartItem.getSelectedTemperatures() == BeverageTemperatureOption.HOT ||
+                                cartItem.getSelectedTemperatures() == BeverageTemperatureOption.HOT_ONLY)
+                                ? beverageItem.getHotImageUrl()
+                                : beverageItem.getIceImageUrl();
+                    } else {
+                        DessertItem dessertItem = validAndCalculatorService.findDessertItemByItemId(cartItem.getDessertItemId());
+                        itemName = dessertItem.getDessertItemNameKo();
+                        imageUrl = dessertItem.getImageUrl();
+                    }
+
+                    List<CheckCartItemOptionDto> options = cartItem.getCartItemOption().stream()
+                            .map(option -> {
+                                ItemOption itemOption = itemOptionRepository.findById(option.getItemOptionId())
+                                        .orElseThrow(() -> new CartException(CartErrorCode.ITEM_OPTION_NOT_FOUND));
+
+                                CheckCartItemOptionDto checkCartItemOptionDto = new CheckCartItemOptionDto(
+                                        option.getItemOptionId(),
+                                        option.getQuantity()
+                                );
+                                return checkCartItemOptionDto;
+                            }).toList();
+
+                    return CheckCartItemDto.builder()
+                            .cartItemId(cartItem.getId())
+                            .itemType(itemType)
+                            .itemName(itemName)
+                            .quantity(cartItem.getQuantity())
+                            .imageUrl(imageUrl)
+                            .beverageSizeOption(cartItem.getSelectedSizes())
+                            .beverageTemperatureOption(cartItem.getSelectedTemperatures())
+                            .options(options)
+                            .build();
+                }).toList();
+
+        return new CheckCartItemResponse(checkCartItemDtos);
+    }
+
 
     /**
      *
