@@ -43,12 +43,12 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(memberAuthInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(SWAGGER_PATH) // Swagger 관련 모든 경로 제외
-                .excludePathPatterns("/items/**", "/stores/**")    // item과 매장 정보 GET 관련 제외
+                .excludePathPatterns("/items/**")    // item 정보 GET 관련 제외
                 .excludePathPatterns("/members/signup", "/auth/login")     // 고객 회원가입, 로그인 엔드포인트 제외
-                .excludePathPatterns("/merchant/**");
+                .excludePathPatterns("/merchant/**", "/stores/**"); // 매장 관련 경로 제외
 
         registry.addInterceptor(merchantAuthInterceptor)
-                .addPathPatterns("/merchant/**")
+                .addPathPatterns("/merchant/**", "/stores/**")
                 .excludePathPatterns("/merchant/signup", "/merchant/auth/login") // 매장 회원가입, 로그인 엔드포인트 제외
         ;
     }
