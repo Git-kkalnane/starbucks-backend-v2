@@ -3,12 +3,21 @@ package git_kkalnane.starbucksbackenv2.domain.cart.domain;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageSizeOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
+import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "cart_items")
-public class CartItem extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class CartItem extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -38,7 +47,7 @@ public class CartItem extends git_kkalnane.starbucksbackenv2.global.entity.BaseT
     private Long itemPrice;
 
     @Column(name = "shot_quantity")
-    private Long shotQuantity;
+    private Long shotQuantity = 1L;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "selected_sizes")
@@ -50,6 +59,7 @@ public class CartItem extends git_kkalnane.starbucksbackenv2.global.entity.BaseT
 
     @Column(name = "image_url")
     private String imageUrl;
+
 
     // Getters and Setters
 }

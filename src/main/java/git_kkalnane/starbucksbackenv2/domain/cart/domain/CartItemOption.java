@@ -1,11 +1,18 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.domain;
 
+import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "cart_item_options")
-public class CartItemOption extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class CartItemOption extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "cart_item_id")

@@ -2,6 +2,8 @@ package git_kkalnane.starbucksbackenv2.domain.item.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 
 /**
  * ItemOption
@@ -14,6 +16,8 @@ import lombok.Getter;
 @Entity
 @Getter
 @Table(name = "item_options")
+@Getter
+@NoArgsConstructor
 public class ItemOption extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
