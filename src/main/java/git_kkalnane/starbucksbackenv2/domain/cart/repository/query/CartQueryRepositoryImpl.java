@@ -41,7 +41,7 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
     public Long calculateTotalPriceWithOption(Long itemId, List<Long> optionIds) {
         QBeverageItem beverageItem = QBeverageItem.beverageItem;
         QItemOption option = QItemOption.itemOption;
-
+      
             Integer price = queryFactory
                     .select(beverageItem.price)
                     .from(beverageItem)
@@ -76,6 +76,11 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
 
         return price == null ? 0L : price;
         }
+
+        long safeAdditionalPrice = (additionalPrice != null) ? additionalPrice : 0L;
+
+        return (price + safeAdditionalPrice);
+    }
 
 }
 

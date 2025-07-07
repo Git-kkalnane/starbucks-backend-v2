@@ -7,6 +7,7 @@ import git_kkalnane.starbucksbackenv2.domain.order.domain.Order;
 import git_kkalnane.starbucksbackenv2.domain.paycard.domain.PayCard;
 import git_kkalnane.starbucksbackenv2.domain.pointcard.domain.PointCard;
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,10 +20,12 @@ import lombok.ToString;
 @ToString
 @Table(name = "members")
 public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
+
     @Builder
     Member(Long id, String name, String nickname, String email, String password,
-           java.util.List<Inquiry> inquiries, java.util.List<Cart> carts, java.util.List<PayCard> payCards,
-           java.util.List<PointCard> pointCards, java.util.List<Order> orders, java.util.List<Notification> notifications) {
+        List<Inquiry> inquiries, List<Cart> carts, List<PayCard> payCards,
+        PointCard pointCards, List<Order> orders, List<Notification> notifications) {
+
         this.id = id;
         this.name = name;
         this.nickname = nickname;
@@ -31,7 +34,7 @@ public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTim
         this.inquiries = inquiries;
         this.carts = carts;
         this.payCards = payCards;
-        this.pointCards = pointCards;
+        this.pointCard = pointCard;
         this.orders = orders;
         this.notifications = notifications;
     }
@@ -52,7 +55,7 @@ public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTim
     @Column(name = "password", length = 255)
     private String password;
 
-        @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member")
     private java.util.List<Inquiry> inquiries;
 
     @OneToMany(mappedBy = "member")
@@ -61,8 +64,8 @@ public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTim
     @OneToMany(mappedBy = "member")
     private java.util.List<PayCard> payCards;
 
-    @OneToMany(mappedBy = "member")
-    private java.util.List<PointCard> pointCards;
+    @OneToOne(mappedBy = "member")
+    private PointCard pointCard;
 
     @OneToMany(mappedBy = "member")
     private java.util.List<Order> orders;

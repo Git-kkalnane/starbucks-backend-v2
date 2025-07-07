@@ -61,6 +61,7 @@ public class CartService {
             totalPrice = cartQueryRepository.calculatePrice(cartItemDto.itemId());
         }
 
+        Long totalPrice = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionIds);
 
         Long beverageItemId = null, dessertItemId = null;
 
@@ -136,6 +137,7 @@ public class CartService {
 
         cartItemRepository.deleteById(cartItemId);
         return cartItem.getId();
+
     }
 
 }

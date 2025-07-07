@@ -47,7 +47,7 @@ public class CartItem extends BaseTimeEntity {
     private Long itemPrice;
 
     @Column(name = "shot_quantity")
-    private Long shotQuantity;
+    private Long shotQuantity = 1L;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "selected_sizes")
@@ -59,6 +59,7 @@ public class CartItem extends BaseTimeEntity {
 
     @Column(name = "image_url")
     private String imageUrl;
+
 
     // Getters and Setters
 }

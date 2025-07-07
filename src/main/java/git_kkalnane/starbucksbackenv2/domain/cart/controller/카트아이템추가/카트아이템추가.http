@@ -1,0 +1,39 @@
+@host = localhost
+@port = 8080
+@baseUrl = http://{{host}}:{{port}}/api/v1
+@accessToken = Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MSwiaWF0IjoxNzUxODU0ODY4LCJleHAiOjE3NTE4NTY2Njh9.9tVoR2yxlctodswPysSsfgOSqfyKIMskaH5Kzg-4AwZKmDk8Ww4-nzvq5Fh-PL9DoQZ0DXmsO8TAp4XVZTmalg
+### ========================================
+### 주문 생성 테스트
+### ========================================
+
+### 1. 주문 생성 기본 조회
+POST {{baseUrl}}/carts
+Content-Type: application/json
+Authorization: {{accessToken}}
+
+{
+  "id": 1,
+  "itemId": 101,
+  "image": "https://cdn.starbucks.com/item123.jpg",
+  "itemType": "BEVERAGE",
+  "temperatureOption": "HOT",
+  "cartItemOptions": [
+    {
+      "id": 1,
+      "cartItemId": 1,
+      "itemOptionId": 201,
+      "quantity": 2,
+      "itemOptionName": "샷 추가"
+    },
+    {
+      "id": 2,
+      "cartItemId": 1,
+      "itemOptionId": 202,
+      "quantity": 1,
+      "itemOptionName": "휘핑 추가"
+    }
+  ],
+  "cupSize": "GRANDE",
+  "quantity": 1,
+  "priceWithOptions": 6300
+}
