@@ -7,8 +7,10 @@ import git_kkalnane.starbucksbackenv2.domain.cart.domain.Cart;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.QCart;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemOption;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.QItemOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.QBeverageItem;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.QDessertItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -41,7 +43,7 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
 
     @Override
     public Long calculateTotalPriceWithOption(Long itemId, List<CartItemOptionDto> optionDtos) {
-        // 1. 기본 음료 가격 가져오기
+      
         QBeverageItem beverageItem = QBeverageItem.beverageItem;
         QItemOption option = QItemOption.itemOption;
 
@@ -57,7 +59,6 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
 
         long totalOptionPrice = 0;
 
-        // 2. 옵션 하나씩 조회하고 수량 곱해서 누적
         for (CartItemOptionDto itemOptionDto : optionDtos) {
             Integer optionPrice = queryFactory
                     .select(option.optionPrice)
@@ -72,10 +73,26 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
             totalOptionPrice += optionPrice * itemOptionDto.quantity(); // 수량 반영!
         }
 
-        // 3. 최종 가격 = 음료 가격 + 옵션 총 가격
         return basePrice + totalOptionPrice;
     }
 
+        @Override
+    public Long calculatePrice(Long itemId) {
+        QDessertItem dessertItem = QDessertItem.dessertItem;
+
+        Integer price = queryFactory
+                .select(dessertItem.price)
+                .from(dessertItem)
+                .where(dessertItem.id.eq(itemId))
+                .fetchOne();
+
+        return price == null ? 0L : price;
+        }
+
+        long safeAdditionalPrice = (additionalPrice != null) ? additionalPrice : 0L;
+
+        return basePrice + totalOptionPrice;
+    }
 
 }
 

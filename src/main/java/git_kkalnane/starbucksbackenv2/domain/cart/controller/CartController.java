@@ -33,7 +33,7 @@ public class CartController {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 사용자 또는 상품")
     })
-    @PostMapping
+    @PostMapping(value = "/addItem")
     public ResponseEntity<SuccessResponse> addItem(
             @Parameter(description = "추가할 상품의 ID와 수량, 옵션 등의 정보") @RequestBody CartItemDto cartItemDto,
             @RequestAttribute(name = "memberId") Long memberId) {
@@ -62,7 +62,24 @@ public class CartController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_MODIFIED, modifyCartItemResponse));
+    }
+    @Operation(
+            summary = "장바구니에서 상품 삭제",
+            description = "로그인한 사용자의 장바구니에 상품을 삭제합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "장바구니 상품 삭제 성공")
+    })
+    @DeleteMapping
+    public ResponseEntity<SuccessResponse> deleteItem(
+            @RequestAttribute(name = "memberId") Long memberId,
+            @RequestParam Long cartItemId) {
 
+        cartService.deleteCartItem(cartItemId, memberId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_DELETED));
     }
 
 

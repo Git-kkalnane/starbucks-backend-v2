@@ -49,6 +49,16 @@ public class CartService {
                 : List.of();
 
         Long singleTotal = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionDtos);
+        Long totalPrice = 0L;
+
+        if(cartItemDto.itemType() == BEVERAGE) {
+            totalPrice = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionIds);
+        } else {
+            totalPrice = cartQueryRepository.calculatePrice(cartItemDto.itemId());
+        }
+
+        Long totalPrice = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionIds);
+
 
 
         Long beverageItemId = null, dessertItemId = null;
@@ -94,7 +104,7 @@ public class CartService {
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_NOT_FOUND));
         CartItem cartItem = cartItemRepository.findById(dto.cartItemId())
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
-
+      
         cartItem.changeQuantity(dto.changeQuantity());
 
         Long finalPrice;
@@ -103,6 +113,8 @@ public class CartService {
         } else {
             List<CartItemOption> savedOpts = cartItemOptionRepository.findAllByCartItemId(cartItem.getId());
             List<CartItemOptionDto> optDtos = savedOpts.stream()
+            optionDtos = options.stream()
+
                     .map(option -> new CartItemOptionDto(
                             option.getId(),
                             option.getCartItemId(),
@@ -123,6 +135,22 @@ public class CartService {
                 cartItem.getQuantity(),
                 finalPrice
         );
+    }
+
+    @Transactional
+    public Long deleteCartItem(Long cartItemId, Long memberId) {
+
+        Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(
+                () -> new CartException(CartErrorCode.CART_NOT_FOUND));
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(
+                () -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
+
+        if(!cartItem.getCart().getId().equals(cart.getId())) {
+            throw new CartException(CartErrorCode.CART_INVALID);}
+
+        cartItemRepository.deleteById(cartItemId);
+        return cartItem.getId();
+
     }
 
 }
