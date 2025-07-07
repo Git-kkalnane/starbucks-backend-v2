@@ -17,7 +17,7 @@ public record CartItemDto(
        BeverageTemperatureOption temperatureOption ,
        @NotNull List<CartItemOptionDto> cartItemOptions,
        BeverageSizeOption cupSize,
-       @Min(1) Long quantity,
+       @Min(1) int quantity,
        Long priceWithOptions
 
 ) {

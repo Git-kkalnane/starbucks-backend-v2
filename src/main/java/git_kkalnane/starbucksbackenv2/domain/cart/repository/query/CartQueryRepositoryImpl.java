@@ -5,13 +5,17 @@ import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartErrorCode
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartException;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.Cart;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.QCart;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.QItemOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.QBeverageItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository("cartQueryRepository")
 public class CartQueryRepositoryImpl implements CartQueryRepository {
@@ -36,29 +40,40 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
     }
 
     @Override
-    public Long calculateTotalPriceWithOption(Long itemId, List<Long> optionIds) {
+    public Long calculateTotalPriceWithOption(Long itemId, List<CartItemOptionDto> optionDtos) {
+        // 1. 기본 음료 가격 가져오기
         QBeverageItem beverageItem = QBeverageItem.beverageItem;
         QItemOption option = QItemOption.itemOption;
 
-        Integer price = queryFactory
+        Integer basePrice = queryFactory
                 .select(beverageItem.price)
                 .from(beverageItem)
                 .where(beverageItem.id.eq(itemId))
                 .fetchOne();
 
-        if(price == null) {
+        if (basePrice == null) {
             throw new CartException(CartErrorCode.INVALID_ITEM);
         }
 
-        Integer additionalPrice = queryFactory
-                .select(option.optionPrice.sum())
-                .from(option)
-                .where(option.id.in(optionIds))
-                .fetchOne();
+        long totalOptionPrice = 0;
 
-        long safeAdditionalPrice = (additionalPrice != null) ? additionalPrice : 0L;
+        // 2. 옵션 하나씩 조회하고 수량 곱해서 누적
+        for (CartItemOptionDto itemOptionDto : optionDtos) {
+            Integer optionPrice = queryFactory
+                    .select(option.optionPrice)
+                    .from(option)
+                    .where(option.id.eq(itemOptionDto.itemOptionId()))
+                    .fetchOne();
 
-        return (price + safeAdditionalPrice);
+            if (optionPrice == null) {
+                throw new CartException(CartErrorCode.INVALID_ITEM);
+            }
+
+            totalOptionPrice += optionPrice * itemOptionDto.quantity(); // 수량 반영!
+        }
+
+        // 3. 최종 가격 = 음료 가격 + 옵션 총 가격
+        return basePrice + totalOptionPrice;
     }
 
 

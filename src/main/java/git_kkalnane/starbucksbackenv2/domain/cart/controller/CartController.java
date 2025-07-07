@@ -2,7 +2,9 @@ package git_kkalnane.starbucksbackenv2.domain.cart.controller;
 
 import git_kkalnane.starbucksbackenv2.domain.cart.common.success.CartSuccessCode;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.ModifyCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.CartItemResponse;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.ModifyCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.service.CartService;
 import git_kkalnane.starbucksbackenv2.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,6 +43,26 @@ public class CartController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_CODE, response));
+    }
+
+    @Operation(
+            summary = "장바구니 수량 수정",
+            description = "로그인한 사용자의 장바구니에서 상품 수량을 수정합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "장바구니 수량 수정 성공")
+    })
+    @PutMapping
+    public ResponseEntity<SuccessResponse> updateItem( @RequestBody ModifyCartItemDto modifyCartItemDto,
+                                                       @RequestAttribute(name = "memberId") Long memberId
+
+    ) {
+        ModifyCartItemResponse modifyCartItemResponse = cartService.modifyCartItem(modifyCartItemDto, memberId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_MODIFIED, modifyCartItemResponse));
+
     }
 
 

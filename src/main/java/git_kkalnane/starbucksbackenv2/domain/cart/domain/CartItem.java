@@ -37,8 +37,8 @@ public class CartItem extends BaseTimeEntity {
     @Column(name = "dessert_item_id")
     private Long dessertItemId;
 
-    @Column(nullable = false)
-    private Long quantity;
+    @Column(name = "quantity", nullable = false)
+    private int quantity = 1;
 
     @Column(name = "final_item_price", nullable = false)
     private Long finalItemPrice;
@@ -60,6 +60,12 @@ public class CartItem extends BaseTimeEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
+    public void changeQuantity(int changeQuantity) {
+        this.quantity = changeQuantity;
+    }
+    public void setFinalItemPrice(Long finalItemPrice) {
+        this.finalItemPrice = finalItemPrice;
+    }
 
     // Getters and Setters
 }
