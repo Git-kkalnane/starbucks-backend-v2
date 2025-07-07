@@ -17,6 +17,7 @@ import java.util.List;
 @Builder
 public class CartItem extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -46,7 +47,7 @@ public class CartItem extends BaseTimeEntity {
     private Long itemPrice;
 
     @Column(name = "shot_quantity")
-    private Long shotQuantity;
+    private Long shotQuantity = 1L;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "selected_sizes")

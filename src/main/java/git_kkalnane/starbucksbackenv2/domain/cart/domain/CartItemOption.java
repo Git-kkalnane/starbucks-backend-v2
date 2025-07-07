@@ -12,6 +12,7 @@ import lombok.*;
 @Builder
 public class CartItemOption extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "cart_item_id")
