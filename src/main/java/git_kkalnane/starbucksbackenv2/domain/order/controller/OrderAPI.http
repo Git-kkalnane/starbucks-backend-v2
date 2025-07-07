@@ -1,11 +1,20 @@
 @host = localhost
 @port = 8080
 @baseUrl = http://{{host}}:{{port}}/api/v1
-### ========================================
-### 주문 생성 테스트
-### ========================================
+
+### [사용자] 회원가입
+POST {{baseUrl}}/members/signup
+Content-Type: application/json
+
+{
+  "email": "test1234@gmail.com",
+  "nickname": "테스트",
+  "name" : "테스트",
+  "password": "Test1234!!"
+}
 
 ### 로그인하고 인증 토큰(JWT) 발급받기
+
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
@@ -57,9 +66,17 @@ Authorization: {{token}}
   ]
 }
 
+> {%
+    // 응답 body의 result 객체에서 orderId 값을 가져와 'orderId' 변수에 저장
+    let orderId = response.body.result.orderId;
+    client.global.set("orderId", orderId);
+    client.log("==> 생성된 주문 ID: " + orderId + " (orderId 변수에 저장됨)");
+%}
+
+
 ### [사용자용] 주문 상세 조회
 # 2단계: 발급받은 토큰으로 주문 상세 내역 조회하기
-GET {{baseUrl}}/orders/1
+GET {{baseUrl}}/orders/4
 Authorization: {{token}}
 
 ### [사용자용] 나의 현재 주문 목록 조회
