@@ -1,6 +1,7 @@
 package git_kkalnane.starbucksbackenv2.domain.member.event;
 
 
+import git_kkalnane.starbucksbackenv2.domain.cart.service.CartService;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.paycard.common.exception.PayCardErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.paycard.common.exception.PayCardException;
@@ -22,6 +23,7 @@ public class MemberSignupEventListener {
 
     private final PayCardService payCardService;
     private final PointCardService pointCardService;
+    private final CartService cartService;
 
     /**
      * 회원가입 완료 후 PayCard를 생성하는 이벤트 리스너
@@ -36,6 +38,7 @@ public class MemberSignupEventListener {
         Member member = event.getMember();
         createPayCardForMember(member);
         createPointCardForMember(member);
+        cartService.createCartForMember(member);
 
     }
 
