@@ -36,7 +36,7 @@ public class MerchantAuthInterceptor implements HandlerInterceptor {
         Long merchantId = merchantAuthService.verifyTokenIncludedInRequest(plainToken);
 
         // HTTP 요청의 속성에 멤버 엔티티의 식별자를 추가한다.
-        request.setAttribute("memberId", merchantId);
+        request.setAttribute("storeId", merchantId);
 
         GlobalLogger.info(MERCHANT_ID_LOG_PREFIX, merchantId);
 
