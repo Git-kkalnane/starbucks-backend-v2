@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * ItemOption
- * BeverageItem에서만 사용됩니다.
+ * BeverageItem 에서만 사용됩니다.
  * 
  * @author joungmin
  * @version 1.0
@@ -24,6 +24,7 @@ public class ItemOption extends git_kkalnane.starbucksbackenv2.global.entity.Bas
 
     @Column(name = "item_id")
     private Long itemId;
+
     @Column(name = "name", length = 50)
     private String name;
 

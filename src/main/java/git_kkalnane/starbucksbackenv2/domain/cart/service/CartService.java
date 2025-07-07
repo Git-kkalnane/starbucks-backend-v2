@@ -7,15 +7,14 @@ import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItem;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItemOption;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.ModifyCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.CartItemResponse;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.ModifyCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartItemOptionRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.query.CartQueryRepository;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
-import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageSizeOption;
-import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
-import git_kkalnane.starbucksbackenv2.domain.item.repository.ItemOptionRepository;
 import git_kkalnane.starbucksbackenv2.domain.member.common.exception.MemberErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.member.common.exception.MemberException;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
@@ -26,33 +25,30 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType.BEVERAGE;
-import static git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType.DESSERT;
-
 @Service
 @RequiredArgsConstructor
 public class CartService {
 
-    private final CartItemRepository cartItemRepository;
-    private final CartRepository cartRepository;
-    private final CartQueryRepository cartQueryRepository;
-    private final CartItemOptionRepository cartItemOptionRepository;
     private final MemberRepository memberRepository;
-    private final ItemOptionRepository itemOptionRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final CartItemOptionRepository cartItemOptionRepository;
+    private final CartQueryRepository cartQueryRepository;
 
     @Transactional
     public CartItemResponse addCartItem(Long memberId, CartItemDto cartItemDto) {
 
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                ()-> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         Cart cart = cartRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_NOT_FOUND));
 
-        List<Long> optionIds = cartItemDto.cartItemOptions() != null
-                ? cartItemDto.cartItemOptions().stream().map(CartItemOptionDto::itemOptionId).toList()
+
+        List<CartItemOptionDto> optionDtos = cartItemDto.cartItemOptions() != null
+                ? cartItemDto.cartItemOptions()
                 : List.of();
 
+        Long singleTotal = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionDtos);
         Long totalPrice = 0L;
 
         if(cartItemDto.itemType() == BEVERAGE) {
@@ -63,17 +59,15 @@ public class CartService {
 
         Long totalPrice = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionIds);
 
-        Long beverageItemId = null, dessertItemId = null;
 
-        switch (cartItemDto.itemType()) {
-            case BEVERAGE:
-                beverageItemId= cartItemDto.itemId();
-                break;
-            case DESSERT:
-                dessertItemId = cartItemDto.itemId();
-                break;
-            default :
-                throw new CartException(CartErrorCode.INVALID_TYPE);
+
+        Long beverageItemId = null, dessertItemId = null;
+        if (cartItemDto.itemType() == ItemType.BEVERAGE) {
+            beverageItemId = cartItemDto.itemId();
+        } else if (cartItemDto.itemType() == ItemType.DESSERT) {
+            dessertItemId = cartItemDto.itemId();
+        } else {
+            throw new CartException(CartErrorCode.INVALID_TYPE);
         }
 
         CartItem cartItem = CartItem.builder()
@@ -85,42 +79,61 @@ public class CartService {
                 .imageUrl(cartItemDto.image())
                 .selectedSizes(cartItemDto.cupSize())
                 .selectedTemperatures(cartItemDto.temperatureOption())
-                .itemPrice(totalPrice)
-                .finalItemPrice(totalPrice)
+                .itemPrice(singleTotal)
+                .finalItemPrice(singleTotal * cartItemDto.quantity())
                 .build();
-        cartItemRepository.save(cartItem);
+        cartItem = cartItemRepository.save(cartItem);
 
-        List<CartItemOptionDto> optionDtos = List.of();
-
-        if(!optionIds.isEmpty()) {
-            List<CartItemOption> options = cartItemDto.cartItemOptions().stream()
-                    .map(cartItemOptionDto -> CartItemOption.builder()
-                            .cartItemId(cartItem.getId())
-                            .itemOptionId(cartItemOptionDto.itemOptionId())
-                            .quantity(cartItemOptionDto.quantity())
+        if (!optionDtos.isEmpty()) {
+            List<CartItemOption> options = optionDtos.stream()
+                    .map(option -> CartItemOption.builder()
+                            .cartItemId(option.cartItemId())
+                            .itemOptionId(option.itemOptionId())
+                            .quantity(option.quantity())
                             .build())
                     .toList();
             cartItemOptionRepository.saveAll(options);
+        }
 
+        return CartItemResponse.of(cartItem, optionDtos);
+    }
+
+    @Transactional
+    public ModifyCartItemResponse modifyCartItem(ModifyCartItemDto dto, Long memberId) {
+        Cart cart = cartRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CartException(CartErrorCode.CART_NOT_FOUND));
+        CartItem cartItem = cartItemRepository.findById(dto.cartItemId())
+                .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
+      
+        cartItem.changeQuantity(dto.changeQuantity());
+
+        Long finalPrice;
+        if (cartItem.getItemType() == ItemType.DESSERT) {
+            finalPrice = cartItem.getItemPrice() * dto.changeQuantity();
+        } else {
+            List<CartItemOption> savedOpts = cartItemOptionRepository.findAllByCartItemId(cartItem.getId());
+            List<CartItemOptionDto> optDtos = savedOpts.stream()
             optionDtos = options.stream()
+
                     .map(option -> new CartItemOptionDto(
                             option.getId(),
                             option.getCartItemId(),
                             option.getItemOptionId(),
                             option.getQuantity(),
-                            itemOptionRepository.findNameById(option.getItemOptionId())
-                    )).toList();
+                            null))
+                    .toList();
+
+            Long singleTotal = cartQueryRepository.calculateTotalPriceWithOption(
+                    cartItem.getBeverageItemId(), optDtos);
+            finalPrice = singleTotal * dto.changeQuantity();
         }
-        return new CartItemResponse(
+        cartItem.setFinalItemPrice(finalPrice);
+
+        return new ModifyCartItemResponse(
                 cartItem.getId(),
-                cartItem.getBeverageItemId(),
-                cartItem.getImageUrl(),
                 cartItem.getItemType(),
-                cartItem.getSelectedTemperatures(),
-                optionDtos,
-                cartItem.getSelectedSizes(),
                 cartItem.getQuantity(),
-                cartItemDto.priceWithOptions()
+                finalPrice
         );
     }
 
