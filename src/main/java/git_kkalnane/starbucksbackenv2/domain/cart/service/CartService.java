@@ -36,7 +36,7 @@ public class CartService {
     private final CartQueryRepository cartQueryRepository;
 
     @Transactional
-    public CartItemResponse addCartItem(Long memberId, CartItemDto dto) {
+    public CartItemResponse addCartItem(Long memberId, CartItemDto cartItemDto) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
@@ -44,33 +44,33 @@ public class CartService {
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_NOT_FOUND));
 
 
-        List<CartItemOptionDto> optionDtos = dto.cartItemOptions() != null
-                ? dto.cartItemOptions()
+        List<CartItemOptionDto> optionDtos = cartItemDto.cartItemOptions() != null
+                ? cartItemDto.cartItemOptions()
                 : List.of();
-        
-        Long singleTotal = cartQueryRepository.calculateTotalPriceWithOption(dto.itemId(), optionDtos);
+
+        Long singleTotal = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionDtos);
 
 
         Long beverageItemId = null, dessertItemId = null;
-        if (dto.itemType() == ItemType.BEVERAGE) {
-            beverageItemId = dto.itemId();
-        } else if (dto.itemType() == ItemType.DESSERT) {
-            dessertItemId = dto.itemId();
+        if (cartItemDto.itemType() == ItemType.BEVERAGE) {
+            beverageItemId = cartItemDto.itemId();
+        } else if (cartItemDto.itemType() == ItemType.DESSERT) {
+            dessertItemId = cartItemDto.itemId();
         } else {
             throw new CartException(CartErrorCode.INVALID_TYPE);
         }
 
         CartItem cartItem = CartItem.builder()
                 .cart(cart)
-                .itemType(dto.itemType())
-                .quantity(dto.quantity())
+                .itemType(cartItemDto.itemType())
+                .quantity(cartItemDto.quantity())
                 .beverageItemId(beverageItemId)
                 .dessertItemId(dessertItemId)
-                .imageUrl(dto.image())
-                .selectedSizes(dto.cupSize())
-                .selectedTemperatures(dto.temperatureOption())
+                .imageUrl(cartItemDto.image())
+                .selectedSizes(cartItemDto.cupSize())
+                .selectedTemperatures(cartItemDto.temperatureOption())
                 .itemPrice(singleTotal)
-                .finalItemPrice(singleTotal * dto.quantity())
+                .finalItemPrice(singleTotal * cartItemDto.quantity())
                 .build();
         cartItem = cartItemRepository.save(cartItem);
 
