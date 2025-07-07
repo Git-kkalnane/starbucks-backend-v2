@@ -22,6 +22,19 @@ spring:
   application:
     name: git-kkalnane-starbucks
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  endpoint:
+    metrics:
+      cache:
+        time-to-live: 30s
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 # PayCard 설정
 pay-card:
   init-amount: 500000
