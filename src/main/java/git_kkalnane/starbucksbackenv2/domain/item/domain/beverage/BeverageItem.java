@@ -12,21 +12,6 @@ import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class BeverageItem extends BaseTimeEntity {
-
-//    BeverageItem(Long id, String itemNameKo, String itemNameEn, String description, Integer price, Boolean isCoffee, String hotImageUrl, String iceImageUrl, String shotName, List<BeverageSupportedSize> supportedSizes, BeverageTemperatureOption supportedTemperatures) {
-//        this.id = id;
-//        this.itemNameKo = itemNameKo;
-//        this.itemNameEn = itemNameEn;
-//        this.description = description;
-//        this.price = price;
-//        this.isCoffee = isCoffee;
-//        this.hotImageUrl = hotImageUrl;
-//        this.iceImageUrl = iceImageUrl;
-//        this.shotName = shotName;
-//        this.supportedSizes = supportedSizes;
-//        this.supportedTemperatures = supportedTemperatures;
-//    }
-
     @Id
     private Long id;
 
