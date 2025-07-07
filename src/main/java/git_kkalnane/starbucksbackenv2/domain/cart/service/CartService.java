@@ -49,17 +49,6 @@ public class CartService {
                 : List.of();
 
         Long singleTotal = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionDtos);
-        Long totalPrice = 0L;
-
-        if(cartItemDto.itemType() == BEVERAGE) {
-            totalPrice = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionIds);
-        } else {
-            totalPrice = cartQueryRepository.calculatePrice(cartItemDto.itemId());
-        }
-
-        Long totalPrice = cartQueryRepository.calculateTotalPriceWithOption(cartItemDto.itemId(), optionIds);
-
-
 
         Long beverageItemId = null, dessertItemId = null;
         if (cartItemDto.itemType() == ItemType.BEVERAGE) {
@@ -113,8 +102,6 @@ public class CartService {
         } else {
             List<CartItemOption> savedOpts = cartItemOptionRepository.findAllByCartItemId(cartItem.getId());
             List<CartItemOptionDto> optDtos = savedOpts.stream()
-            optionDtos = options.stream()
-
                     .map(option -> new CartItemOptionDto(
                             option.getId(),
                             option.getCartItemId(),
