@@ -59,4 +59,7 @@ public class OrderItem extends BaseTimeEntity {
     @Column(name = "selected_temperatures")
     private BeverageTemperatureOption selectedTemperatures;
 
+    protected void setOrder(Order order) {
+        this.order = order;
+    }
 }

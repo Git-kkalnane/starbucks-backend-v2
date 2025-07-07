@@ -1,5 +1,6 @@
 package git_kkalnane.starbucksbackenv2.domain.order.domain;
 
+import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemOption;
 import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,8 +20,9 @@ public class OrderItemOption extends BaseTimeEntity {
     @JoinColumn(name = "order_item_id")
     private OrderItem orderItem;
 
-    @Column(name = "item_option_id")
-    private Long itemOptionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_option_id")
+    private ItemOption itemOption;
 
     @Column
     private int quantity;
