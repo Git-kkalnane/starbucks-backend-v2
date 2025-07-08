@@ -3,7 +3,13 @@ package git_kkalnane.starbucksbackenv2.domain.cart.service;
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartException;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.Cart;
+import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItem;
+import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItemOption;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.ModifyCartItemDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartItemOptionRepository;
+import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.query.CartQueryRepository;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
@@ -30,6 +36,9 @@ public class ValidAndCalculatorService {
     private final CartQueryRepository cartQueryRepository;
     private final BeverageItemRepository beverageItemRepository;
     private final DessertItemRepository dessertItemRepository;
+    private final CartItemRepository cartItemRepository;
+    private final CartItemOptionRepository cartItemOptionRepository;
+
 
     /**
      * memberRepository에서 memberId를 찾고, 없으면 에러 발생
@@ -46,7 +55,6 @@ public class ValidAndCalculatorService {
         return cartRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_NOT_FOUND));
     }
-
     public BeverageItem findBeverageItemByItemId(Long itemId) {
         return beverageItemRepository.findById(itemId)
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
@@ -54,7 +62,13 @@ public class ValidAndCalculatorService {
 
     public DessertItem findDessertItemByItemId(Long itemId) {
         return dessertItemRepository.findById(itemId)
-                .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
+           .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
+    }
+
+    public CartItem findCartItemByCartId(Long cartItemId) {
+        return cartItemRepository.findById(cartItemId)
+           .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
+               
     }
 
     /**
