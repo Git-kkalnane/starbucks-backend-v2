@@ -2,6 +2,7 @@ package git_kkalnane.starbucksbackenv2.domain.cart.controller;
 
 import git_kkalnane.starbucksbackenv2.domain.cart.common.success.CartSuccessCode;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.DeleteCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.ModifyCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.CartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.ModifyCartItemResponse;
@@ -52,7 +53,7 @@ public class CartController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "장바구니 수량 수정 성공")
     })
-    @PutMapping
+    @PutMapping(value = "/modifyItem")
     public ResponseEntity<SuccessResponse> updateItem( @RequestBody ModifyCartItemDto modifyCartItemDto,
                                                        @RequestAttribute(name = "memberId") Long memberId
 
@@ -70,12 +71,13 @@ public class CartController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "장바구니 상품 삭제 성공")
     })
-    @DeleteMapping
-    public ResponseEntity<SuccessResponse> deleteItem(
-            @RequestAttribute(name = "memberId") Long memberId,
-            @RequestParam Long cartItemId) {
 
-        cartService.deleteCartItem(cartItemId, memberId);
+    @DeleteMapping(value = "deleteItem")
+    public ResponseEntity<SuccessResponse> deleteItem(
+            @RequestBody DeleteCartItemDto deleteCartItemDto,
+            @RequestAttribute(name = "memberId") Long memberId) {
+
+        cartService.deleteCartItem(deleteCartItemDto, memberId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

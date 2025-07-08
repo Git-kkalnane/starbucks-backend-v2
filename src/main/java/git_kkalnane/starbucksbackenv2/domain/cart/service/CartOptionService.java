@@ -1,5 +1,6 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.service;
 
+import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItem;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItemOption;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartItemOptionRepository;
@@ -19,12 +20,12 @@ public class CartOptionService {
      * CartItemOptionDto에 담긴 값을 옵션별로 정리해서 List화
      * 후에 cartItemOptionRepository에 저장한다.
      */
-    public void saveCartItemOptions(Long cartItemId, List<CartItemOptionDto> optionDtos) {
+    public void saveCartItemOptions(CartItem cartItem, List<CartItemOptionDto> optionDtos) {
         if (optionDtos == null || optionDtos.isEmpty()) return;
 
         List<CartItemOption> options = optionDtos.stream()
                 .map(dto -> CartItemOption.builder()
-                        .cartItemId(cartItemId)
+                        .cartItem(cartItem)
                         .itemOptionId(dto.itemOptionId())
                         .quantity(dto.quantity())
                         .build())
