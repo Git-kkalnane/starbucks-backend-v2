@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class BeverageItemDto {
+
     private Long id;
     private String nameEn;
     private String nameKo;
