@@ -24,7 +24,7 @@ public class BeverageItemService {
      * @param pageable 페이징 및 정렬 정보
      * @return {@link BeveragePaginationResponse}
      */
-    public BeveragePaginationResponse getAllBeverageItems(Pageable pageable) {
+    public BeveragePaginationResponse getAllBeverages(Pageable pageable) {
         Page<BeverageItem> paginationBeverages = beverageItemRepository.findAllWithSupportedSizes(pageable);
 
         List<BeverageItemDto> beverageItemDtos = paginationBeverages.map(BeverageItemDto::new).getContent();
