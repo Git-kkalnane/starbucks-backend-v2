@@ -66,4 +66,24 @@ public class FavoriteCartController {
                 .status(HttpStatus.OK)
                 .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_CODE, response));
     }
+
+
+    @Operation(
+            summary = "나의 음료에서 상품 삭제",
+            description = "로그인한 사용자의 나의 음료에 상품을 삭제합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "아이템 삭제 성공")
+    })
+    @DeleteMapping(value = "deleteItem")
+    public ResponseEntity<SuccessResponse> deleteItem(
+            @RequestAttribute(name = "memberId") Long memberId,
+            @RequestParam Long cartItemId) {
+
+        favoriteCartService.deleteCartItem(cartItemId, memberId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_DELETED));
+    }
 }

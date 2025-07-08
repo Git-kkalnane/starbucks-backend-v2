@@ -2,9 +2,12 @@ package git_kkalnane.starbucksbackenv2.domain.cart.service.favorite;
 
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartException;
+import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItem;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.FavoriteCart;
+import git_kkalnane.starbucksbackenv2.domain.cart.domain.FavoriteCartItem;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.FavoriteCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.FavoriteSimpleDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.repository.favorite.FavoriteCartItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.favorite.FavoriteCartRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.query.FavoriteCartQueryRepository;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
@@ -27,6 +30,7 @@ public class FavoriteValidAndCalculatorService {
     private final FavoriteCartRepository favoriteCartRepository;
     private final MemberRepository memberRepository;
     private final FavoriteCartQueryRepository favoriteCartQueryRepository;
+    private final FavoriteCartItemRepository favoriteCartItemRepository;
 
     public Member findByMemberId(Long memberId) {
         return memberRepository.findById(memberId)
@@ -36,6 +40,11 @@ public class FavoriteValidAndCalculatorService {
     public FavoriteCart findFavoriteCartByMemberId(Long memberId) {
         return favoriteCartRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_NOT_FOUND));
+    }
+
+    public FavoriteCartItem findCartItemByCartId(Long cartItemId) {
+        return favoriteCartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
     }
 
     public void validateFavoriteSimpleDto(FavoriteSimpleDto dto) {
