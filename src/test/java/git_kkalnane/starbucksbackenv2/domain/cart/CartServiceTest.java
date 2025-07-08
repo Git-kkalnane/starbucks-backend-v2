@@ -7,10 +7,7 @@ import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.*;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.CartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.CheckCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.ModifyCartItemResponse;
-import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartItemOptionRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartItemRepository;
-import git_kkalnane.starbucksbackenv2.domain.cart.repository.CartRepository;
-import git_kkalnane.starbucksbackenv2.domain.cart.repository.query.CartQueryRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.service.CartItemCreateService;
 import git_kkalnane.starbucksbackenv2.domain.cart.service.CartOptionService;
 import git_kkalnane.starbucksbackenv2.domain.cart.service.CartService;
@@ -22,7 +19,6 @@ import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemper
 import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.ItemOptionRepository;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
-import git_kkalnane.starbucksbackenv2.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
