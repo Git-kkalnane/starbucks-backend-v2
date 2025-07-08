@@ -24,7 +24,7 @@ public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTim
     @Builder
     Member(Long id, String name, String nickname, String email, String password,
         List<Inquiry> inquiries, List<Cart> carts, List<PayCard> payCards,
-        PointCard pointCards, List<Order> orders, List<Notification> notifications) {
+        PointCard pointCards, List<Order> orders) {
 
         this.id = id;
         this.name = name;
@@ -36,7 +36,6 @@ public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTim
         this.payCards = payCards;
         this.pointCard = pointCard;
         this.orders = orders;
-        this.notifications = notifications;
     }
 
     @Id
@@ -69,8 +68,5 @@ public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTim
 
     @OneToMany(mappedBy = "member")
     private java.util.List<Order> orders;
-
-    @OneToMany(mappedBy = "member")
-    private java.util.List<Notification> notifications;
 
 }
