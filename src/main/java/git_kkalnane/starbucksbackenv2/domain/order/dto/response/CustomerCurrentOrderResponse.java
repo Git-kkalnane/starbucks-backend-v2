@@ -41,7 +41,7 @@ public record CustomerCurrentOrderResponse(
     /**
      * 주문에 포함될 매장 정보를 담는 내부 DTO.
      */
-    private record StoreInfo(Long storeId, String storeName, String storeAddress) {
+    public record StoreInfo(Long storeId, String storeName, String storeAddress) {
         public static StoreInfo from(Store store) {
             return new StoreInfo(store.getId(), store.getName(), store.getAddress());
         }
