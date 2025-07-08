@@ -1,5 +1,9 @@
 package git_kkalnane.starbucksbackenv2.domain.notification.domain;
 
+
+import lombok.Getter;
+
+@Getter
 public class SseEmitterId {
     private final Long receiverId;
     private final NotificationTargetType notificationTargetType;

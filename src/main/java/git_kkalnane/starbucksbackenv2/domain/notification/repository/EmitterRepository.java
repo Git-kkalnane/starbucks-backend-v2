@@ -26,6 +26,10 @@ public interface EmitterRepository {
     void deleteAllEmitterStartWithNotificationTargetTypeAndReceiverId
             (Long receiverId, NotificationTargetType notificationTargetType);
 
+    void deleteAllEmitterStartWithNotificationTargetTypeAndReceiverId
+            (SseEmitterId sseEmitterId);
+
+
     void deleteAllEventCacheStartWithNotificationTargetTypeAndReceiverId
             (Long receiverId, NotificationTargetType notificationTargetType);
 

@@ -75,6 +75,22 @@ public class EmitterRepositoryImpl implements EmitterRepository {
     }
 
     @Override
+    public void deleteAllEmitterStartWithNotificationTargetTypeAndReceiverId(
+            SseEmitterId emitterId) {
+        emitters.forEach(
+                (key, emitter) -> {
+                    if (key.startsWith(SseEmitterId.getEmitterIdPrefix
+                            (emitterId.getReceiverId(), emitterId.getNotificationTargetType()))) {
+
+                        emitters.remove(key);
+                    }
+                }
+        );
+    }
+
+
+
+    @Override
     public void deleteAllEventCacheStartWithNotificationTargetTypeAndReceiverId(
             Long receiverId, NotificationTargetType notificationTargetType) {
         eventCache.forEach(

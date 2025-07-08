@@ -46,15 +46,28 @@ public class NotificationService {
      * @return 생성된 SSE Emitter
      */
     public SseEmitter subscribe(Long receiverId, String notificationTargetTypeName) {
-        // emitterId 생성
         NotificationTargetType notificationTargetType =
                 NotificationTargetType.findByName(notificationTargetTypeName);
 
         SseEmitterId sseEmitterId = SseEmitterId.of(receiverId, notificationTargetType);
 
-        // 하나의 클라이언트에 대한 emitter 저장
         SseEmitter emitter = emitterRepository.save(sseEmitterId, new SseEmitter(DEFAULT_TIMEOUT));
 
+        deleteSseEmitterIfExists(sseEmitterId);
+
+        registerSseEmitterEvent(sseEmitterId, emitter);
+
+        // 503 에러를 방지하기 위한 구독용 더미 이벤트 전송
+        NotificationEvent event = NotificationEvent.of
+                (receiverId, NotificationTargetType.MEMBER, NotificationType.SUBSCRIBE);
+
+        send(emitter, event, sseEmitterId.getId(),
+                NotificationSuccessCode.NOTIFICATION_SUBSCRIBED.getMessage(receiverId));
+
+        return emitter;
+    }
+
+    private void registerSseEmitterEvent(SseEmitterId sseEmitterId, SseEmitter emitter) {
         // 클라이언트의 연결 종료 및 타임아웃에 대한 이벤트 처리 -> Emiiter 삭제
         emitter.onCompletion(() -> {
             GlobalLogger.info("SSE 연결 종료", "emitterId: " + sseEmitterId.getId());
@@ -65,15 +78,10 @@ public class NotificationService {
             GlobalLogger.info("SSE 연결 종료", "emitterId: " + sseEmitterId.getId());
             emitterRepository.deleteById(sseEmitterId.getId());
         });
+    }
 
-        // 503 에러를 방지하기 위한 구독용 더미 이벤트 전송
-        NotificationEvent event = NotificationEvent.of
-                (receiverId, NotificationTargetType.MEMBER, NotificationType.SUBSCRIBE);
-
-        send(emitter, event, sseEmitterId.getId(),
-                NotificationSuccessCode.NOTIFICATION_SUBSCRIBED.getMessage(receiverId));
-
-        return emitter;
+    private void deleteSseEmitterIfExists(SseEmitterId sseEmitterId) {
+        emitterRepository.deleteAllEmitterStartWithNotificationTargetTypeAndReceiverId(sseEmitterId);
     }
 
     /**
