@@ -8,6 +8,7 @@ import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.QBeverageItem;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.QBeverageSupportedSize;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -43,6 +44,18 @@ public class BeverageItemQueryRepositoryImpl implements BeverageItemQueryReposit
 
     private List<OrderSpecifier> getOrderSpecifiers(Sort sort, QBeverageItem beverageItem) {
         List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
+    @Override
+    public Optional<BeverageItem> findByIdWithSupportedSizes(Long id) {
+        QBeverageItem beverageItem = QBeverageItem.beverageItem;
+        QBeverageSupportedSize supportedSize = QBeverageSupportedSize.beverageSupportedSize;
+
+        BeverageItem result = jpaQueryFactory.selectFrom(beverageItem).distinct()
+                        .leftJoin(beverageItem.supportedSizes, supportedSize).fetchJoin()
+                        .where(beverageItem.id.eq(id)).fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
 
         if (sort.isEmpty()) {
             // 기본 정렬: id 오름차순
