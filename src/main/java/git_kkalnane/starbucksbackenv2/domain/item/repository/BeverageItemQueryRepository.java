@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface BeverageItemQueryRepository {
+
     Page<BeverageItem> findAllWithSupportedSizes(Pageable pageable);
 
     Optional<BeverageItem> findByIdWithSupportedSizes(Long id);
