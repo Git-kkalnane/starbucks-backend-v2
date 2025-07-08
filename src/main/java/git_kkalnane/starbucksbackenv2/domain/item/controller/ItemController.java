@@ -1,7 +1,6 @@
 package git_kkalnane.starbucksbackenv2.domain.item.controller;
 
 import git_kkalnane.starbucksbackenv2.domain.item.common.success.ItemSuccessCode;
-import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.BeverageItemDto;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.ItemOptionDto;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.response.BeveragePaginationResponse;
