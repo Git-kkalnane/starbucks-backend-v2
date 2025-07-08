@@ -5,6 +5,7 @@ import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.BeverageItemDto;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.ItemOptionDto;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.response.BeveragePaginationResponse;
+import git_kkalnane.starbucksbackenv2.domain.item.dto.response.DessertPaginationResponse;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.response.SingleBeverageResponse;
 import git_kkalnane.starbucksbackenv2.domain.item.service.BeverageItemService;
 import git_kkalnane.starbucksbackenv2.domain.item.service.DessertItemService;
@@ -35,7 +36,8 @@ public class ItemController {
     public ResponseEntity<SuccessResponse<BeveragePaginationResponse>> getAllBeverages(
         @Parameter(hidden = true)
         @PageableDefault(size = 15, sort = "itemNameKo", direction = Direction.ASC)
-        Pageable pageable) {
+        Pageable pageable
+    ) {
 
         BeveragePaginationResponse response = beverageItemService.getAllBeverages(pageable);
 
@@ -54,7 +56,13 @@ public class ItemController {
     }
 
     @GetMapping("/desserts")
-    public List<DessertItem> getAllDesserts() {
-        return dessertItemService.getAllDesserts();
+    public ResponseEntity<SuccessResponse<DessertPaginationResponse>> getAllDesserts(
+        @Parameter(hidden = true)
+        @PageableDefault(size = 15, sort = "dessertItemNameKo", direction = Direction.ASC)
+        Pageable pageable
+    ) {
+        DessertPaginationResponse response = dessertItemService.getAllDesserts(pageable);
+
+        return ResponseEntity.ok(SuccessResponse.of(ItemSuccessCode.DESSERT_LIST_RETRIEVED, response));
     }
 }
