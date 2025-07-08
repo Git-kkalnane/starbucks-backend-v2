@@ -14,7 +14,9 @@ public enum CartErrorCode implements ErrorCode {
     CART_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "카트가 이미 생성되었습니다."),
     INVALID_TYPE(HttpStatus.BAD_REQUEST, "아이템 타입이 존재하지 않는 타입입니다."),
     INVALID_ITEM(HttpStatus.BAD_REQUEST, "존재하지 않는 아이템입니다."),
-    ITEM_OPTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 옵션입니다.");
+    ITEM_OPTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 옵션입니다."),
+    INVALID_ITEM_INFO(HttpStatus.BAD_REQUEST, "아이템 정보가 맞지 않습니다."),
+    ITEM_NOT_FOUND(HttpStatus.BAD_REQUEST, "아이템이 없습니다.");
 
     private final HttpStatus status;
     private final String message;

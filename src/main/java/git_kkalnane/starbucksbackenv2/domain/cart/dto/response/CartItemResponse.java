@@ -1,6 +1,7 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.dto.response;
 
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItem;
+import git_kkalnane.starbucksbackenv2.domain.cart.domain.FavoriteCartItem;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageSizeOption;

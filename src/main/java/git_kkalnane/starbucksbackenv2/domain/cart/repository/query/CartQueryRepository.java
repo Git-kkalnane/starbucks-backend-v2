@@ -1,6 +1,7 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.repository.query;
 
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.Cart;
+import git_kkalnane.starbucksbackenv2.domain.cart.domain.FavoriteCart;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
 import org.springframework.stereotype.Repository;
 
