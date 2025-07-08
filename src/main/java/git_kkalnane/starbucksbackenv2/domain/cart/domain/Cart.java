@@ -23,5 +23,4 @@ public class Cart extends BaseTimeEntity {
     @OneToMany(mappedBy = "cart")
     private java.util.List<CartItem> cartItems;
 
-    // Getters and Setters
 }

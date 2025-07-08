@@ -25,5 +25,4 @@ public class CartItemOption extends BaseTimeEntity {
     @JoinColumn(name = "cart_item_id")
     private CartItem cartItem;
 
-    // Getters and Setters
 }

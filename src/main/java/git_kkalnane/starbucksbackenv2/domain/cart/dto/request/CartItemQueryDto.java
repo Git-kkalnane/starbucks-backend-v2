@@ -1,6 +1,5 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.dto.request;
 
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

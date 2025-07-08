@@ -25,5 +25,4 @@ public class FavoriteCart extends BaseTimeEntity {
     @OneToMany(mappedBy = "favoriteCart")
     private List<FavoriteCartItem> favoriteCartItems;
 
-    // Getters and Setters
 }

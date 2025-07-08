@@ -67,5 +67,4 @@ public class CartItem extends BaseTimeEntity{
         this.finalItemPrice = finalItemPrice;
     }
 
-    // Getters and Setters
 }

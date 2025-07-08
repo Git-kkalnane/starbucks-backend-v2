@@ -2,26 +2,19 @@ package git_kkalnane.starbucksbackenv2.domain.cart.service.favorite;
 
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartException;
-import git_kkalnane.starbucksbackenv2.domain.cart.domain.Cart;
-import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItem;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.FavoriteCart;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.FavoriteCartItem;
-import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.DeleteCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.FavoriteCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.FavoriteSimpleDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.favorite.FavoriteCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.favorite.FavoriteSimpleResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.favorite.FavoriteCartItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.favorite.FavoriteCartRepository;
-import git_kkalnane.starbucksbackenv2.domain.cart.service.CartOptionService;
-import git_kkalnane.starbucksbackenv2.domain.cart.service.ValidAndCalculatorService;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
