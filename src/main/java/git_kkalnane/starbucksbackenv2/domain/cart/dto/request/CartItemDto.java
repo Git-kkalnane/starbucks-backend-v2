@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record CartItemDto(
-
        Long id,
        Long itemId,
        String image,
@@ -19,6 +18,5 @@ public record CartItemDto(
        BeverageSizeOption cupSize,
        @Min(1) int quantity,
        Long priceWithOptions
-
 ) {
 }

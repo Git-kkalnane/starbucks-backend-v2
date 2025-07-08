@@ -3,6 +3,7 @@ package git_kkalnane.starbucksbackenv2.domain.member.event;
 
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.cart.service.CartService;
+import git_kkalnane.starbucksbackenv2.domain.cart.service.favorite.FavoriteCartService;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.paycard.common.exception.PayCardErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.paycard.common.exception.PayCardException;
@@ -25,6 +26,7 @@ public class MemberSignupEventListener {
     private final PayCardService payCardService;
     private final PointCardService pointCardService;
     private final CartService cartService;
+    private final FavoriteCartService favoriteCartService;
 
     /**
      * 회원가입 완료 후 PayCard를 생성하는 이벤트 리스너
@@ -40,6 +42,7 @@ public class MemberSignupEventListener {
         createPayCardForMember(member);
         createPointCardForMember(member);
         createCartForMember(member);
+        createFavoriteCartForMember(member);
     }
 
     /**
@@ -83,6 +86,21 @@ public class MemberSignupEventListener {
     private void createCartForMember(Member member) {
         try {
             cartService.createCartForMember(member);
+            log.info("Cart 생성 - 회원: {}", member.getEmail());
+        } catch (PayCardException e) {
+            if(e.getErrorCode() == CartErrorCode.CART_ALREADY_EXISTS) {
+                log.warn("Cart 이미 존재 - 회원 : {}", member.getEmail());
+            } else {
+                log.error("Cart 생성 실패 - 회원 {}. 오류: {}", member.getEmail(), e.getMessage(), e);
+            }
+        } catch (Exception e) {
+            log.error("Cart 생성 중 예상치 못한 오류가 발생했습니다. 회원: {}", member.getEmail(), e);
+        }
+    }
+
+    private void createFavoriteCartForMember(Member member) {
+        try {
+            favoriteCartService.createFavoriteCartForMember(member);
             log.info("Cart 생성 - 회원: {}", member.getEmail());
         } catch (PayCardException e) {
             if(e.getErrorCode() == CartErrorCode.CART_ALREADY_EXISTS) {
