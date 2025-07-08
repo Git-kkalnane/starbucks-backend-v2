@@ -1,5 +1,7 @@
 package git_kkalnane.starbucksbackenv2.domain.item.service;
 
+import git_kkalnane.starbucksbackenv2.domain.item.common.exception.ItemErrorCode;
+import git_kkalnane.starbucksbackenv2.domain.item.common.exception.ItemException;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.DessertItemDto;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.response.DessertPaginationResponse;
@@ -32,6 +34,20 @@ public class DessertItemService {
             .currentPage(paginationDesserts.getNumber())
             .totalPages(paginationDesserts.getTotalPages())
             .pageSize(paginationDesserts.getSize()).build();
+    }
+
+    /**
+     * ID로 디저트 상세 정보를 조회합니다.
+     *
+     * @param id 조회할 음료 ID
+     * @return {@link DessertItemDto} 객체
+     * @throws ItemException 해당 ID를 가진 디저트를 DB에서 찾을 수 없는 경우
+     */
+    public DessertItemDto getSpecificDessert(Long id) {
+        DessertItem dessertItem = dessertItemRepository.findById(id)
+            .orElseThrow(() -> new ItemException(ItemErrorCode.DESSERT_NOT_FOUND));
+
+        return new DessertItemDto(dessertItem);
     }
 
     /**
