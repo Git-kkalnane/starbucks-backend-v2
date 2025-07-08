@@ -37,7 +37,7 @@ public class ItemController {
         @PageableDefault(size = 15, sort = "itemNameKo", direction = Direction.ASC)
         Pageable pageable) {
 
-        BeveragePaginationResponse response = beverageItemService.getAllBeverageItems(pageable);
+        BeveragePaginationResponse response = beverageItemService.getAllBeverages(pageable);
 
         return ResponseEntity.ok(SuccessResponse.of(ItemSuccessCode.DRINKS_LIST_RETRIEVED, response));
     }
