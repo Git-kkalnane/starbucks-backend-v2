@@ -1,31 +1,38 @@
 package git_kkalnane.starbucksbackenv2.domain.item.controller;
 
-import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageItem;
+import git_kkalnane.starbucksbackenv2.domain.item.common.success.ItemSuccessCode;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
-import git_kkalnane.starbucksbackenv2.domain.item.dto.BeverageItemDto;
+import git_kkalnane.starbucksbackenv2.domain.item.dto.response.BeveragePaginationResponse;
 import git_kkalnane.starbucksbackenv2.domain.item.service.BeverageItemService;
 import git_kkalnane.starbucksbackenv2.domain.item.service.DessertItemService;
+import git_kkalnane.starbucksbackenv2.global.success.SuccessResponse;
+import io.swagger.v3.oas.annotations.Parameter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("items")
 public class ItemController {
+
     private final BeverageItemService beverageItemService;
     private final DessertItemService dessertItemService;
 
-
     @GetMapping("drinks")
-    public List<BeverageItemDto> getAllBeverages() {
-        return beverageItemService.getAllBeverageItems()
-                .stream()
-                .map(BeverageItemDto::new)
-                .collect(java.util.stream.Collectors.toList());
+    public ResponseEntity<SuccessResponse<BeveragePaginationResponse>> getAllBeverages(
+        @Parameter(hidden = true)
+        @PageableDefault(size = 15, sort = "itemNameKo", direction = Direction.ASC)
+        Pageable pageable) {
+        BeveragePaginationResponse response = beverageItemService.getAllBeverageItems(pageable);
+
+        return ResponseEntity.ok(SuccessResponse.of(ItemSuccessCode.DRINKS_LIST_RETRIEVED, response));
     }
 
     @GetMapping("desserts")
