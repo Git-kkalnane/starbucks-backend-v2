@@ -5,6 +5,7 @@ import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.DeleteCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.ModifyCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.CartItemResponse;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.CheckCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.ModifyCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.service.CartService;
 import git_kkalnane.starbucksbackenv2.global.success.SuccessResponse;
@@ -82,6 +83,25 @@ public class CartController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_DELETED));
+    }
+
+    @Operation(
+            summary = "장바구니 상품 조회",
+            description = "로그인한 사용자의 장바구니에 상품을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "장바구니 상품 조회 성공")
+    })
+    @GetMapping
+    public ResponseEntity<SuccessResponse> getItem(
+            @RequestAttribute(name = "memberId") Long memberId
+    ) {
+
+        CheckCartItemResponse checkCartItemResponse = cartService.getCartItem(memberId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_CHECK, checkCartItemResponse));
     }
 
 
