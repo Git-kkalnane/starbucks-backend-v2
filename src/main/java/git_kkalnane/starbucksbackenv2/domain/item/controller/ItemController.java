@@ -2,6 +2,7 @@ package git_kkalnane.starbucksbackenv2.domain.item.controller;
 
 import git_kkalnane.starbucksbackenv2.domain.item.common.success.ItemSuccessCode;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.BeverageItemDto;
+import git_kkalnane.starbucksbackenv2.domain.item.dto.DessertItemDto;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.ItemOptionDto;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.response.BeveragePaginationResponse;
 import git_kkalnane.starbucksbackenv2.domain.item.dto.response.DessertPaginationResponse;
@@ -44,7 +45,7 @@ public class ItemController {
     }
 
     @GetMapping("/drinks/{id}")
-    public ResponseEntity<SuccessResponse<?>> getSpecificBeverage(@PathVariable Long id) {
+    public ResponseEntity<SuccessResponse<SingleBeverageResponse>> getSpecificBeverage(@PathVariable Long id) {
 
         BeverageItemDto beverageItemDto = new BeverageItemDto(beverageItemService.getSpecificBeverage(id));
         List<ItemOptionDto> options = itemOptionService.getAvailableOptionsByItemId(id);
@@ -63,5 +64,13 @@ public class ItemController {
         DessertPaginationResponse response = dessertItemService.getAllDesserts(pageable);
 
         return ResponseEntity.ok(SuccessResponse.of(ItemSuccessCode.DESSERT_LIST_RETRIEVED, response));
+    }
+
+    @GetMapping("/desserts/{id}")
+    public ResponseEntity<SuccessResponse<DessertItemDto>> getSpecificDessert(@PathVariable Long id) {
+
+        DessertItemDto response = dessertItemService.getSpecificDessert(id);
+
+        return ResponseEntity.ok(SuccessResponse.of(ItemSuccessCode.DESSERT_DETAIL_RETRIEVED, response));
     }
 }
