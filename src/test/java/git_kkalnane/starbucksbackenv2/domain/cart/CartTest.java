@@ -90,12 +90,12 @@ class CartTest {
         // 6. 옵션도 저장 (비어있는 경우)
         cartOptionService.saveCartItemOptions(cartItem, cartItemDto.cartItemOptions());
 
-        // ✅ 검증 1: 장바구니에 저장되었는지
+        // 검증 1: 장바구니에 저장되었는지
         List<CartItem> cartItems = cartItemRepository.findAllByCartId(cart.getId());
         assertThat(cartItems).hasSize(1);
         assertThat(cartItems.get(0).getQuantity()).isEqualTo(2);
 
-        // ✅ 검증 2: 수량 수정
+        // 검증 2: 수량 수정
         CartItem toModify = cartItems.get(0);
         toModify.changeQuantity(3);
         cartItemRepository.save(toModify);
@@ -103,7 +103,7 @@ class CartTest {
         CartItem updated = cartItemRepository.findById(toModify.getId()).orElseThrow();
         assertThat(updated.getQuantity()).isEqualTo(3);
 
-        // ✅ 검증 3: 삭제
+        // 검증 3: 삭제
         cartItemRepository.deleteById(updated.getId());
 
         List<CartItem> afterDelete = cartItemRepository.findAllByCartId(cart.getId());
