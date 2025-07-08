@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @NoArgsConstructor
+@Getter
 public class BeverageItemDto {
     private Long id;
     private String nameEn;
