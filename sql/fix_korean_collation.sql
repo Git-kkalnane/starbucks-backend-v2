@@ -9,6 +9,7 @@ CREATE COLLATION IF NOT EXISTS korean_collation (provider = icu, locale = 'ko-KR
 
 -- 3. 기본 C collation을 사용하는 대신 numeric 정렬 개선
 ALTER TABLE beverage_items ALTER COLUMN name_ko TYPE VARCHAR(50) COLLATE "C";
+ALTER TABLE dessert_items ALTER COLUMN name_ko TYPE VARCHAR(50) COLLATE "C";
 
 -- 4. 또는 UTF8 기반 정렬 사용
 -- ALTER TABLE beverage_items ALTER COLUMN name_ko TYPE VARCHAR(50) COLLATE "en_US.UTF-8";
