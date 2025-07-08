@@ -3,7 +3,7 @@ package git_kkalnane.starbucksbackenv2.domain.cart.service.favorite;
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartException;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.FavoriteCart;
-import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.FavoriteCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.FavoriteSimpleDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.favorite.FavoriteCartRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.query.FavoriteCartQueryRepository;
@@ -69,6 +69,17 @@ public class FavoriteValidAndCalculatorService {
             return favoriteCartQueryRepository.calculateBeveragePrice(favoriteSimpleDto.itemId());
         } else if (favoriteSimpleDto.itemType() == ItemType.DESSERT) {
             return  favoriteCartQueryRepository.calculateDessertPrice(favoriteSimpleDto.itemId());
+        } else {
+            throw new CartException(CartErrorCode.INVALID_TYPE);
+        }
+    }
+
+    public Long calculateSingleTotalWithOption(FavoriteCartItemDto favoriteCartItemDto) {
+        if (favoriteCartItemDto.itemType() == ItemType.BEVERAGE) {
+            return favoriteCartQueryRepository.totalPriceWithOption(favoriteCartItemDto.itemId(),
+                    Optional.ofNullable(favoriteCartItemDto.cartItemOptions()).orElse(List.of()));
+        } else if (favoriteCartItemDto.itemType() == ItemType.DESSERT) {
+            return favoriteCartQueryRepository.priceCalculator(favoriteCartItemDto.itemId());
         } else {
             throw new CartException(CartErrorCode.INVALID_TYPE);
         }
