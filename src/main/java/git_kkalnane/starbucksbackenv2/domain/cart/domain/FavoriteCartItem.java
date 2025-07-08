@@ -64,5 +64,4 @@ public class FavoriteCartItem extends BaseTimeEntity{
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
-    // Getters and Setters
 }

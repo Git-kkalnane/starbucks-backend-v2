@@ -1,6 +1,5 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.common.exception;
 
-import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartErrorCode;
 import git_kkalnane.starbucksbackenv2.global.error.core.ErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

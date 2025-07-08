@@ -23,8 +23,6 @@ import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageItem;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.ItemOptionRepository;
-import git_kkalnane.starbucksbackenv2.domain.member.common.exception.MemberErrorCode;
-import git_kkalnane.starbucksbackenv2.domain.member.common.exception.MemberException;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

@@ -25,5 +25,4 @@ public class FavoriteCartItemOption extends BaseTimeEntity {
     @JoinColumn(name = "favorite_cart_item_id")
     private FavoriteCartItem favoriteCartItem;
 
-    // Getters and Setters
 }
