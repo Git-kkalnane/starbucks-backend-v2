@@ -3,27 +3,18 @@ package git_kkalnane.starbucksbackenv2.domain.item.domain.dessert;
 import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * 
- */
 @Entity
-@Getter
 @Table(name = "dessert_items")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@Getter
 public class DessertItem extends BaseTimeEntity {
-    @Builder
-    DessertItem(Long id, String dessertItemNameKo, String dessertItemNameEn, String description, Integer price, String imageUrl) {
-        this.id = id;
-        this.dessertItemNameKo = dessertItemNameKo;
-        this.dessertItemNameEn = dessertItemNameEn;
-        this.description = description;
-        this.price = price;
-        this.imageUrl = imageUrl;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,8 +34,4 @@ public class DessertItem extends BaseTimeEntity {
 
     @Column(name = "image_url", length = 254)
     private String imageUrl;
-
-
-
-    // Getters and Setters
 }
