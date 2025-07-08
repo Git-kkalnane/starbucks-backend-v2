@@ -2,6 +2,9 @@ package git_kkalnane.starbucksbackenv2.domain.cart.dto.response;
 
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.CartItem;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageSizeOption;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
 
 import java.util.List;
 
@@ -9,10 +12,10 @@ public record CartItemResponse(
         Long id,
         Long itemId,
         String image,
-        Enum itemType,
-        Enum temperatureOption ,
+        ItemType itemType,
+        BeverageTemperatureOption temperatureOption ,
         List<CartItemOptionDto> cartItemOptions,
-        Enum cupSize,
+        BeverageSizeOption cupSize,
         int quantity,
         Long priceWithOptions
 
