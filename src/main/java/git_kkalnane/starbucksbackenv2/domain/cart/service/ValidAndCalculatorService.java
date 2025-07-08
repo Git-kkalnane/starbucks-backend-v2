@@ -63,7 +63,6 @@ public class ValidAndCalculatorService {
     public CartItem findCartItemByCartId(Long cartItemId) {
         return cartItemRepository.findById(cartItemId)
            .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
-               
     }
 
     /**
