@@ -35,9 +35,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // 추가 JVM 프로세스 메트릭 (RSS, VSS, Swap)
-    implementation 'io.github.mweirauch:micrometer-jvm-extras:0.2.2'
-
     // Prometheus 메트릭 노출
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
