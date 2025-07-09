@@ -38,7 +38,7 @@ public class NotificationController {
     }
 
     @PostMapping
-    @Operation(summary = "멤버에 알림 전송 요청"
+    @Operation(summary = "알림 전송 요청"
             , description = "특정 멤버에게 알림 전송을 요청합니다. 매장에서 멤버에 알림 전송을 요청할 때 쓰입니다.")
     @ApiResponse(
             responseCode = "200",
@@ -46,8 +46,7 @@ public class NotificationController {
     )
     public ResponseEntity<SuccessResponse<?>> notificationRequest(@RequestBody OrderNotificationSendRequest request) {
         notificationService.sendNotification(request);
-        return ResponseEntity.ok(SuccessResponse.of(
-                NotificationSuccessCode.NOTIFICATION_DELIVERED));
+        return ResponseEntity.ok(SuccessResponse.of(NotificationSuccessCode.NOTIFICATION_DELIVERED));
     }
 
     @GetMapping
@@ -63,21 +62,6 @@ public class NotificationController {
 
         return ResponseEntity.ok(SuccessResponse.of(
                 NotificationSuccessCode.NOTIFICATION_SUBSCRIPTION_RETRIEVED
-                , notificationService.fetchNotifications(receiverId, NotificationTargetType.MEMBER, pageable)));
-    }
-
-
-    @GetMapping(value = "/subscribe/status")
-    @Operation(summary = "알림 구독 현황 목록 조회"
-            , description = "알림 구독 현황(SseEmitter) 목록을 조회합니다. 조회되지 않으면 빈 리스트를 반환합니다.")
-    @ApiResponse(
-            responseCode = "200",
-            description = "알림 구독 목록 조회 완료"
-    )
-    public ResponseEntity<SuccessResponse<?>> fetchSubscribeList(@RequestAttribute Long memberId,
-                                                                @RequestParam String notificationTargetType) {
-        return ResponseEntity.ok(SuccessResponse.of(
-                NotificationSuccessCode.NOTIFICATION_SUBSCRIPTION_RETRIEVED
-                , notificationService.getEmitters(memberId, NotificationTargetType.findByName(notificationTargetType))));
+                , notificationService.fetchNotifications(receiverId, NotificationTargetType.MERCHANT, pageable)));
     }
 }

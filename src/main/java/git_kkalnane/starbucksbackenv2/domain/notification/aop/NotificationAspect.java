@@ -49,7 +49,7 @@ public class NotificationAspect {
                 NotificationSender.of(member.getId()),
                 NotificationReceiver.of(merchant.getId()),
                 NotificationType.ORDER_CREATED,
-                NotificationTargetType.STORE
+                NotificationTargetType.MERCHANT
         ));
     }
 }
