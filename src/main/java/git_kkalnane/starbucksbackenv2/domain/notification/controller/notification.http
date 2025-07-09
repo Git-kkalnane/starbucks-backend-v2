@@ -1,0 +1,33 @@
+
+
+### 알림 구독 (SSE Subscribe)
+< {%
+    request.variables.set("accessToken", "") // 액세스 토큰을 넣어야 제대로 진행됩니다.
+%}
+GET http://localhost:8080/api/v1/notifications/subscribe?receiverId=1&notificationTargetType=MEMBER
+Accept: text/event-stream
+Authorization: Bearer {{accessToken}}
+
+
+### 알림 전송 (Notification Send)
+< {%
+    request.variables.set("accessToken", "") // 액세스 토큰을 넣어야 제대로 진행됩니다.
+%}
+POST http://localhost:8080/api/v1/notifications
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "orderId": 1,
+  "senderId": 1,
+  "receiverId": 1,
+  "notificationType": "ORDER_CREATED",
+  "notificationTargetType": "MERCHANT"
+}
+
+### 알림 목록 조회
+< {%
+    request.variables.set("accessToken", "") // 액세스 토큰을 넣어야 제대로 진행됩니다.
+%}
+GET http://localhost:8080/api/v1/notifications
+Authorization: Bearer {{accessToken}}

@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 package git_kkalnane.starbucksbackenv2.domain.cart.service.favorite;
 
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartErrorCode;
@@ -13,6 +20,8 @@ import git_kkalnane.starbucksbackenv2.domain.cart.repository.query.FavoriteCartQ
 import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageItem;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
+import git_kkalnane.starbucksbackenv2.domain.item.repository.BeverageItemRepository;
+import git_kkalnane.starbucksbackenv2.domain.item.repository.DessertItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.member.common.exception.MemberErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.member.common.exception.MemberException;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
@@ -31,6 +40,8 @@ public class FavoriteValidAndCalculatorService {
     private final MemberRepository memberRepository;
     private final FavoriteCartQueryRepository favoriteCartQueryRepository;
     private final FavoriteCartItemRepository favoriteCartItemRepository;
+    private final BeverageItemRepository beverageItemRepository;
+    private final DessertItemRepository dessertItemRepository;
 
     public Member findByMemberId(Long memberId) {
         return memberRepository.findById(memberId)
@@ -44,6 +55,16 @@ public class FavoriteValidAndCalculatorService {
 
     public FavoriteCartItem findCartItemByCartId(Long cartItemId) {
         return favoriteCartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
+    }
+
+    public BeverageItem findBeverageItemByItemId(Long itemId) {
+        return beverageItemRepository.findById(itemId)
+                .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
+    }
+
+    public DessertItem findDessertItemByItemId(Long itemId) {
+        return dessertItemRepository.findById(itemId)
                 .orElseThrow(() -> new CartException(CartErrorCode.CART_ITEM_NOT_FOUND));
     }
 
@@ -94,3 +115,4 @@ public class FavoriteValidAndCalculatorService {
         }
     }
 }
+
