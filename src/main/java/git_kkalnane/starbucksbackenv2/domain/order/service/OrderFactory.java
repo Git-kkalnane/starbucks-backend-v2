@@ -7,21 +7,22 @@ import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.BeverageItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.DessertItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.ItemOptionRepository;
+import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.order.common.exception.OrderErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.order.common.exception.OrderException;
-import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
-import git_kkalnane.starbucksbackenv2.domain.order.domain.*;
+import git_kkalnane.starbucksbackenv2.domain.order.domain.Order;
+import git_kkalnane.starbucksbackenv2.domain.order.domain.OrderItem;
+import git_kkalnane.starbucksbackenv2.domain.order.domain.OrderItemOption;
 import git_kkalnane.starbucksbackenv2.domain.order.dto.request.OrderCreateRequest;
 import git_kkalnane.starbucksbackenv2.domain.order.dto.request.OrderItemRequest;
 import git_kkalnane.starbucksbackenv2.domain.order.dto.request.SelectedItemOptionRequest;
-import git_kkalnane.starbucksbackenv2.domain.store.dto.StoreSimpleDto;
 import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
+import git_kkalnane.starbucksbackenv2.domain.store.dto.StoreSimpleDto;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -38,13 +39,12 @@ public class OrderFactory {
      */
     public List<OrderItem> createOrderItems(OrderCreateRequest request) {
         return request.orderItems().stream()
-                .map(this::createOrderItemFromRequest)
-                .collect(Collectors.toList());
+            .map(this::createOrderItemFromRequest)
+            .collect(Collectors.toList());
     }
 
     /**
-     * 단일 OrderItemRequest로부터 OrderItem 엔티티 생성
-     * 아이템 타입, 가격 계산, 옵션 매핑 처리
+     * 단일 OrderItemRequest로부터 OrderItem 엔티티 생성 아이템 타입, 가격 계산, 옵션 매핑 처리
      *
      * @param request 주문 아이템 요청
      * @return 생성된 OrderItem 엔티티
@@ -75,48 +75,44 @@ public class OrderFactory {
     // 아이템 정보(이름, 가격) 추출
     private ItemInfo getItemInfo(OrderItemRequest request) {
         if (request.itemType() == ItemType.BEVERAGE || request.itemType() == ItemType.COFFEE) {
-            BeverageItem item = beverageItemRepository.findById(request.itemId())
-                    .orElseThrow(() -> new OrderException(OrderErrorCode.ITEM_NOT_FOUND));
+            BeverageItem item = beverageItemRepository.findByIdWithSupportedSizes(request.itemId())
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ITEM_NOT_FOUND));
             return new ItemInfo(item.getItemNameKo(), item.getPrice());
         } else {
             DessertItem item = dessertItemRepository.findById(request.itemId())
-                    .orElseThrow(() -> new OrderException(OrderErrorCode.ITEM_NOT_FOUND));
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ITEM_NOT_FOUND));
             return new ItemInfo(item.getDessertItemNameKo(), item.getPrice());
         }
     }
 
     // 옵션 총 가격 계산
     private long calculateOptionsTotalPrice(OrderItemRequest request) {
-        if (request.options() == null || request.options().isEmpty()) return 0L;
+        if (request.options() == null || request.options().isEmpty()) {
+            return 0L;
+        }
         List<Long> optionIds = request.options().stream().map(SelectedItemOptionRequest::itemOptionId).toList();
         Map<Long, ItemOption> itemOptionsMap = itemOptionRepository.findAllById(optionIds).stream()
-                .collect(Collectors.toMap(ItemOption::getId, option -> option));
+            .collect(Collectors.toMap(ItemOption::getId, option -> option));
         return request.options().stream().mapToLong(optReq -> {
             ItemOption option = itemOptionsMap.get(optReq.itemOptionId());
-            if (option == null) throw new OrderException(OrderErrorCode.ITEM_OPTION_NOT_FOUND);
+            if (option == null) {
+                throw new OrderException(OrderErrorCode.ITEM_OPTION_NOT_FOUND);
+            }
             return (long) option.getOptionPrice() * optReq.quantity();
         }).sum();
     }
 
     // 옵션 엔티티 리스트 생성
     private List<OrderItemOption> createOrderItemOptions(OrderItemRequest request) {
-        if (request.options() == null) return List.of();
+        if (request.options() == null) {
+            return List.of();
+        }
         return request.options().stream()
             .map(option -> OrderItemOption.builder()
                 .itemOptionId(option.itemOptionId())
                 .quantity(option.quantity())
                 .build())
             .collect(Collectors.toList());
-    }
-
-    // 아이템 정보 보조 클래스
-    private static class ItemInfo {
-        String itemName;
-        long itemPrice;
-        ItemInfo(String itemName, long itemPrice) {
-            this.itemName = itemName;
-            this.itemPrice = itemPrice;
-        }
     }
 
     /**
@@ -127,21 +123,34 @@ public class OrderFactory {
      */
     public Store createMinimalStore(StoreSimpleDto storeDto) {
         return Store.builder()
-                .id(storeDto.getId())
-                .build();
+            .id(storeDto.getId())
+            .build();
     }
 
     /**
      * 주문 생성에 필요한 회원, 매장, 주문번호, 총금액, 요청정보를 받아 Order 엔티티 생성
      *
-     * @param member 주문하는 회원
-     * @param store 주문이 이루어지는 매장
+     * @param member      주문하는 회원
+     * @param store       주문이 이루어지는 매장
      * @param orderNumber 생성된 주문번호
-     * @param totalPrice 계산된 총 주문 금액
-     * @param request 주문 생성 요청
+     * @param totalPrice  계산된 총 주문 금액
+     * @param request     주문 생성 요청
      * @return 생성된 Order 엔티티
      */
-    public Order createOrder(Member member, Store store, String orderNumber, Long totalPrice, OrderCreateRequest request) {
+    public Order createOrder(Member member, Store store, String orderNumber, Long totalPrice,
+                             OrderCreateRequest request) {
         return Order.createNewOrder(member, store, orderNumber, totalPrice, request);
+    }
+
+    // 아이템 정보 보조 클래스
+    private static class ItemInfo {
+
+        String itemName;
+        long itemPrice;
+
+        ItemInfo(String itemName, long itemPrice) {
+            this.itemName = itemName;
+            this.itemPrice = itemPrice;
+        }
     }
 }

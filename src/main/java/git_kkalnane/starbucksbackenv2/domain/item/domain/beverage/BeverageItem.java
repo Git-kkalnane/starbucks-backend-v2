@@ -1,17 +1,30 @@
 package git_kkalnane.starbucksbackenv2.domain.item.domain.beverage;
 
-import jakarta.persistence.*;
-import java.util.List;
-import lombok.*;
 import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "beverage_items")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
+@Getter
 public class BeverageItem extends BaseTimeEntity {
+
     @Id
     private Long id;
 
@@ -50,6 +63,4 @@ public class BeverageItem extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "supported_temperatures")
     private BeverageTemperatureOption supportedTemperatures;
-
-
 }
