@@ -6,18 +6,13 @@ import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartException
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.Cart;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.QCart;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.CartItemOptionDto;
-import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemOption;
-import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.QItemOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.QBeverageItem;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.QDessertItem;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository("cartQueryRepository")
 public class CartQueryRepositoryImpl implements CartQueryRepository {
@@ -27,7 +22,6 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
     public CartQueryRepositoryImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;
     }
-
 
     @Override
     public Optional<Cart> findByMemberId(Long memberId) {
@@ -88,6 +82,7 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
 
         return price == null ? 0L : price;
         }
+
 }
 
 

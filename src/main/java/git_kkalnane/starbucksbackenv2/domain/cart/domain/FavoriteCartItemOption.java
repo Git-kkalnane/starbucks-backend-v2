@@ -1,26 +1,28 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.domain;
 
-import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "carts")
+@Table(name = "favorite_cart_item_options")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Cart extends BaseTimeEntity {
+public class FavoriteCartItemOption extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @Column(name = "item_option_id")
+    private Long itemOptionId;
 
-    @OneToMany(mappedBy = "cart")
-    private java.util.List<CartItem> cartItems;
+    @Column(name = "quantity")
+    private Long quantity;
+
+    @ManyToOne
+    @JoinColumn(name = "favorite_cart_item_id")
+    private FavoriteCartItem favoriteCartItem;
 
 }

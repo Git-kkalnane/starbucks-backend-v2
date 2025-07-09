@@ -1,32 +1,38 @@
 package git_kkalnane.starbucksbackenv2.domain.cart.domain;
 
+import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageSizeOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
-import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
 import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
-@Table(name = "cart_items")
+@Table(name = "favorite_cart_items")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class CartItem extends BaseTimeEntity{
+public class FavoriteCartItem extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+    @JoinColumn(name = "favorite_cart_id")
+    private FavoriteCart favoriteCart;
 
     @Enumerated(EnumType.STRING)
     private ItemType itemType;
+
+    @Column(name ="item_name")
+    private String itemName;
+
+    @Column(name = "item_description")
+    private String itemDescription;
 
     @Column(name = "beverage_item_id")
     private Long beverageItemId;
@@ -35,16 +41,11 @@ public class CartItem extends BaseTimeEntity{
     private Long dessertItemId;
 
     @Column(name = "quantity", nullable = false)
+    @Builder.Default
     private int quantity = 1;
-
-    @Column(name = "final_item_price", nullable = false)
-    private Long finalItemPrice;
 
     @Column(name = "item_price", nullable = false)
     private Long itemPrice;
-
-    @Column(name = "shot_quantity")
-    private Long shotQuantity = 1L;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "selected_sizes")
@@ -57,14 +58,10 @@ public class CartItem extends BaseTimeEntity{
     @Column(name = "image_url")
     private String imageUrl;
 
-    @OneToMany(mappedBy = "cartItem", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItemOption> cartItemOption;
+    @OneToMany(mappedBy = "favoriteCartItem",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteCartItemOption> favoriteCartItemOption = new ArrayList<>();
 
-    public void changeQuantity(int changeQuantity) {
-        this.quantity = changeQuantity;
-    }
-    public void setFinalItemPrice(Long finalItemPrice) {
-        this.finalItemPrice = finalItemPrice;
-    }
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
 
 }
