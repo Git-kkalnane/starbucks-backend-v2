@@ -5,6 +5,17 @@
 ### 주문 생성 테스트
 ### ========================================
 
+### 회원가입
+POST {{baseUrl}}/members/signup
+Content-Type: application/json
+
+{
+  "email": "test1234@gmail.com",
+  "nickname": "테스트",
+  "name" : "테스트",
+  "password": "Test1234!!"
+}
+
 ### 로그인하고 인증 토큰(JWT) 발급받기
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
