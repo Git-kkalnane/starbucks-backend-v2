@@ -42,7 +42,7 @@ public class NotificationEvent {
     }
 
     private static void validate(String eventId) {
-        if (StringUtils.hasText(eventId)) {
+        if (!StringUtils.hasText(eventId)) {
             throw new NotificationException(NotificationErrorCode.EVENT_ID_IS_NOT_EMPTY, eventId);
         }
     }
