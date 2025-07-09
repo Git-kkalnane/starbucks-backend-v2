@@ -224,7 +224,7 @@ public class OrderService {
      * @return 조회된 Order 엔티티
      */
     public Order getStoreOrderDetail(Long loginStoreId, Long orderId) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findOrderWithItemsById(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
 
         if (!order.getStore().getId().equals(loginStoreId)) {
