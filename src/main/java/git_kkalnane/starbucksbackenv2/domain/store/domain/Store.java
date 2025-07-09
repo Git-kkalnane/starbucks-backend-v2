@@ -59,10 +59,6 @@ public class Store extends git_kkalnane.starbucksbackenv2.global.entity.BaseTime
     @JsonIgnore
     private List<Inquiry> inquiries;
 
-    @OneToMany(mappedBy = "store")
-    @JsonIgnore
-    private List<Notification> notifications;
-
     @Column(nullable = false, length = 50)
     private String name;
 
