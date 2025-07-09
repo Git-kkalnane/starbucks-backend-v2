@@ -76,9 +76,6 @@ public class OrderService {
 
         // Order 저장
         Order savedOrder = orderRepository.save(order);
-        Store _store = storeRepository.findById(store.getId()).orElseThrow(() ->new OrderException(OrderErrorCode.STORE_NOT_FOUND));
-
-        savedOrder.setStore(_store);
 
         // List<OrderItem> 저장, OrderItem은 OrderId가 없으면 에러 발생
         orderItemService.saveOrderItems(savedOrder.getId(), orderItems);

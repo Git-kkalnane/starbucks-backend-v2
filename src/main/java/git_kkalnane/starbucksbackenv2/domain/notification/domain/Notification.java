@@ -1,72 +1,43 @@
 package git_kkalnane.starbucksbackenv2.domain.notification.domain;
 
-
-import git_kkalnane.starbucksbackenv2.domain.notification.domain.vo.NotificationEvent;
-import git_kkalnane.starbucksbackenv2.domain.notification.domain.vo.NotificationReceiver;
-import git_kkalnane.starbucksbackenv2.domain.notification.domain.vo.NotificationSender;
-import git_kkalnane.starbucksbackenv2.domain.notification.dto.response.NotificationItemResponse;
-import git_kkalnane.starbucksbackenv2.domain.notification.dto.response.NotificationResponse;
-import git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity;
+import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
+import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "notifications")
-@Getter
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-@Builder
-public class Notification extends BaseTimeEntity {
+public class Notification extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String message;
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
 
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @Column(name = "target_id", nullable = false)
+    private Long targetId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "target_type", nullable = false)
+    private NotificationTargetType targetType;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    private NotificationType type;
+
+    @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(nullable = false)
-    private boolean isRead;
+    @Column(nullable = false, columnDefinition = "text")
+    private String message;
 
-    @Embedded
-    @AttributeOverride(name = "id", column = @Column(name = "event_id", nullable = false, unique = true))
-    private NotificationEvent event;
+    @Column(name = "is_read", nullable = false)
+    private Boolean isRead = false;
 
-    @Embedded
-    @AttributeOverride(name = "id", column = @Column(name = "sender_id", nullable = false))
-    private NotificationSender sender;
-
-    @Embedded
-    @AttributeOverride(name = "id", column = @Column(name = "receiver_id", nullable = false))
-    private NotificationReceiver receiver;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private NotificationTargetType notificationTargetType;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private NotificationType notificationType;
-
-
-    public NotificationResponse toDto() {
-        return NotificationResponse.builder()
-                .eventId(event.value())
-                .message(message)
-                .title(title)
-                .senderId(sender.value())
-                .receiverId(receiver.value())
-                .notificationTargetType(notificationTargetType.name())
-                .notificationType(notificationType.name())
-                .build();
-    }
-
-    public <T> NotificationItemResponse<T> toDto(T item) {
-        return NotificationItemResponse.of(toDto(), item);
-    }
+    // Getters and Setters
 }

@@ -76,8 +76,4 @@ public class Order extends BaseTimeEntity {
                 .cardNumber(request.cardNumber())
                 .build();
     }
-
-    public void setStore(Store store) {
-        this.store = store;
-    }
 }
