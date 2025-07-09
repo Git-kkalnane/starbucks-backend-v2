@@ -65,7 +65,7 @@ public class MerchantController {
                 (SuccessResponse.of(MerchantSuccessCode.SIGN_UP_COMPLETED)));
     }
 
-    @PostMapping
+    @PostMapping("/notifications")
     @Operation(summary = "멤버에 알림 전송 요청"
             , description = "특정 멤버에게 알림 전송을 요청합니다. 매장에서 멤버에 알림 전송을 요청할 때 쓰입니다.")
     @ApiResponses(
@@ -88,7 +88,7 @@ public class MerchantController {
         return ResponseEntity.ok(SuccessResponse.of(NotificationSuccessCode.NOTIFICATION_DELIVERED));
     }
 
-    @GetMapping
+    @GetMapping("/notifications")
     @Operation(summary = "지점 알림 목록 조회"
             , description = "지점의 알림 목록을 조회합니다. 조회되지 않으면 빈 리스트를 반환합니다.")
     @ApiResponse(
