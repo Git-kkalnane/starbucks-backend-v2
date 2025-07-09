@@ -39,12 +39,13 @@ public class NotificationController {
 
     @PostMapping
     @Operation(summary = "알림 전송 요청"
-            , description = "특정 멤버에게 알림 전송을 요청합니다. 매장에서 멤버에 알림 전송을 요청할 때 쓰입니다.")
+            , description = "특정 지점에게 알림 전송을 요청합니다. 멤버에서 지점에 알림 전송을 요청할 때 쓰입니다.")
     @ApiResponse(
             responseCode = "200",
             description = "알림 전송 성공"
     )
     public ResponseEntity<SuccessResponse<?>> notificationRequest(@RequestBody OrderNotificationSendRequest request) {
+        request.setNotificationTargetType(NotificationTargetType.MERCHANT);
         notificationService.sendNotification(request);
         return ResponseEntity.ok(SuccessResponse.of(NotificationSuccessCode.NOTIFICATION_DELIVERED));
     }
@@ -62,6 +63,6 @@ public class NotificationController {
 
         return ResponseEntity.ok(SuccessResponse.of(
                 NotificationSuccessCode.NOTIFICATION_SUBSCRIPTION_RETRIEVED
-                , notificationService.fetchNotifications(receiverId, NotificationTargetType.MERCHANT, pageable)));
+                , notificationService.fetchNotifications(receiverId, NotificationTargetType.MEMBER, pageable)));
     }
 }

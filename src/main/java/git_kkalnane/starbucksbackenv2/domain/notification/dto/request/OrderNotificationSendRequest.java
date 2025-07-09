@@ -1,6 +1,7 @@
 package git_kkalnane.starbucksbackenv2.domain.notification.dto.request;
 
 
+import git_kkalnane.starbucksbackenv2.domain.notification.domain.NotificationTargetType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,4 +13,8 @@ public class OrderNotificationSendRequest {
     private Long receiverId;
     private String notificationType;
     private String notificationTargetType;
+
+    public void setNotificationTargetType(NotificationTargetType notificationTargetType){
+        this.notificationTargetType = notificationTargetType.name();
+    }
 }

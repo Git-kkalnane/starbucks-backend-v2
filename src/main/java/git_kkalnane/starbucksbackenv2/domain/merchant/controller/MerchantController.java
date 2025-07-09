@@ -4,6 +4,10 @@ import git_kkalnane.starbucksbackenv2.domain.member.dto.response.SignUpResponse;
 import git_kkalnane.starbucksbackenv2.domain.merchant.common.success.MerchantSuccessCode;
 import git_kkalnane.starbucksbackenv2.domain.merchant.dto.request.SignUpRequest;
 import git_kkalnane.starbucksbackenv2.domain.merchant.service.MerchantService;
+import git_kkalnane.starbucksbackenv2.domain.notification.common.success.NotificationSuccessCode;
+import git_kkalnane.starbucksbackenv2.domain.notification.domain.NotificationTargetType;
+import git_kkalnane.starbucksbackenv2.domain.notification.dto.request.OrderNotificationSendRequest;
+import git_kkalnane.starbucksbackenv2.domain.notification.service.NotificationService;
 import git_kkalnane.starbucksbackenv2.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,11 +16,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/merchant")
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MerchantController {
 
     private final MerchantService merchantService;
+    private final NotificationService notificationService;
 
     /**
      * HTTP Request Body에 전송된 정보를 이용해 회원가입 요청을 처리하는 컨트롤러 메서드이다.
@@ -58,5 +63,44 @@ public class MerchantController {
 
         return ResponseEntity.ok(
                 (SuccessResponse.of(MerchantSuccessCode.SIGN_UP_COMPLETED)));
+    }
+
+    @PostMapping
+    @Operation(summary = "멤버에 알림 전송 요청"
+            , description = "특정 멤버에게 알림 전송을 요청합니다. 매장에서 멤버에 알림 전송을 요청할 때 쓰입니다.")
+    @ApiResponses(
+            value = {
+                   @ApiResponse(
+                           responseCode = "200",
+                           description = "알림 전송 성공"
+                   ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "알림 전송 실패(Broken pipe)"
+                    )
+            }
+
+    )
+    public ResponseEntity<SuccessResponse<?>> notificationRequest(@RequestBody OrderNotificationSendRequest request) {
+        request.setNotificationTargetType(NotificationTargetType.MEMBER);
+
+        notificationService.sendNotification(request);
+        return ResponseEntity.ok(SuccessResponse.of(NotificationSuccessCode.NOTIFICATION_DELIVERED));
+    }
+
+    @GetMapping
+    @Operation(summary = "지점 알림 목록 조회"
+            , description = "지점의 알림 목록을 조회합니다. 조회되지 않으면 빈 리스트를 반환합니다.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "알림 목록 조회 완료"
+    )
+    public ResponseEntity<SuccessResponse<?>> fetchNotifications(
+            @RequestAttribute Long receiverId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        return ResponseEntity.ok(SuccessResponse.of(
+                NotificationSuccessCode.NOTIFICATION_SUBSCRIPTION_RETRIEVED
+                , notificationService.fetchNotifications(receiverId, NotificationTargetType.MERCHANT, pageable)));
     }
 }
