@@ -8,6 +8,7 @@ import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.QBeverageItem;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.QBeverageSupportedSize;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,7 +28,7 @@ public class BeverageItemQueryRepositoryImpl implements BeverageItemQueryReposit
         QBeverageSupportedSize supportedSize = QBeverageSupportedSize.beverageSupportedSize;
 
         // 동적 정렬 처리
-        List<OrderSpecifier> orderSpecifiers = getOrderSpecifiers(pageable.getSort(), beverageItem);
+        List<OrderSpecifier<?>> orderSpecifiers = getOrderSpecifiers(pageable.getSort(), beverageItem);
 
         // 페이지네이션된 결과 조회
         List<BeverageItem> content = jpaQueryFactory.selectFrom(beverageItem).distinct()
@@ -41,8 +42,20 @@ public class BeverageItemQueryRepositoryImpl implements BeverageItemQueryReposit
         return new PageImpl<>(content, pageable, total != null ? total : 0L);
     }
 
-    private List<OrderSpecifier> getOrderSpecifiers(Sort sort, QBeverageItem beverageItem) {
-        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
+    @Override
+    public Optional<BeverageItem> findByIdWithSupportedSizes(Long id) {
+        QBeverageItem beverageItem = QBeverageItem.beverageItem;
+        QBeverageSupportedSize supportedSize = QBeverageSupportedSize.beverageSupportedSize;
+
+        BeverageItem result = jpaQueryFactory.selectFrom(beverageItem).distinct()
+                        .leftJoin(beverageItem.supportedSizes, supportedSize).fetchJoin()
+                        .where(beverageItem.id.eq(id)).fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
+    private List<OrderSpecifier<?>> getOrderSpecifiers(Sort sort, QBeverageItem beverageItem) {
+        List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
 
         if (sort.isEmpty()) {
             // 기본 정렬: id 오름차순
@@ -65,7 +78,7 @@ public class BeverageItemQueryRepositoryImpl implements BeverageItemQueryReposit
                 case "supportedTemperatures" -> new OrderSpecifier<>(direction,
                                 beverageItem.supportedTemperatures);
                 default -> // 알 수 없는 필드의 경우 기본값으로 id 정렬
-                        new OrderSpecifier<>(Order.ASC, beverageItem.id);
+                    new OrderSpecifier<>(Order.ASC, beverageItem.id);
             };
 
             orderSpecifiers.add(orderSpecifier);

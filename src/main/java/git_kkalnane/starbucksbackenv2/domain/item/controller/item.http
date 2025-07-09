@@ -6,5 +6,14 @@
 ### 모든 음료(커피 포함) 목록을 조회합니다.
 GET {{baseUrl}}/items/drinks?page=0
 
-### 페이지네이션 없이 모든 디저트 목록을 조회합니다.
+### 음료의 ID 값을 이용해 단일 음료를 조회합니다.
+GET {{baseUrl}}/items/drinks/101
+
+### 음료의 ID 값을 이용해 옵션이 존재하는 단일 음료를 조회합니다.
+GET {{baseUrl}}/items/drinks/104
+
+### 모든 디저트 목록을 조회합니다.
 GET {{baseUrl}}/items/desserts
+
+### 디저트의 ID 값을 이용해 단일 디저트를 조회합니다.
+GET {{baseUrl}}/items/desserts/202
