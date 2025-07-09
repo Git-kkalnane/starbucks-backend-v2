@@ -7,6 +7,9 @@ import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.BeverageItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.DessertItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.ItemOptionRepository;
+import git_kkalnane.starbucksbackenv2.domain.item.service.BeverageItemService;
+import git_kkalnane.starbucksbackenv2.domain.item.service.DessertItemService;
+import git_kkalnane.starbucksbackenv2.domain.item.service.ItemOptionService;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.member.repository.MemberRepository;
 import git_kkalnane.starbucksbackenv2.domain.order.common.exception.OrderErrorCode;
@@ -17,11 +20,12 @@ import git_kkalnane.starbucksbackenv2.domain.order.dto.request.OrderItemRequest;
 import git_kkalnane.starbucksbackenv2.domain.order.dto.request.SelectedItemOptionRequest;
 import git_kkalnane.starbucksbackenv2.domain.order.dto.response.*;
 import git_kkalnane.starbucksbackenv2.domain.order.repository.OrderDailyCounterRepository;
-import git_kkalnane.starbucksbackenv2.domain.order.repository.OrderItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.order.repository.OrderRepository;
+//import git_kkalnane.starbucksbackenv2.domain.payment.service.PaymentService;
 import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
 import git_kkalnane.starbucksbackenv2.domain.store.dto.StoreSimpleDto;
 import git_kkalnane.starbucksbackenv2.domain.store.repository.StoreRepository;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,8 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,14 +47,14 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
+    private final OrderItemService orderItemService;
+    private final BeverageItemService beverageItemService;
+    private final DessertItemService dessertItemService;
+    private final ItemOptionService itemOptionService;
     private final StoreRepository storeRepository;
-    private final BeverageItemRepository beverageItemRepository;
-    private final DessertItemRepository dessertItemRepository;
-    private final ItemOptionRepository itemOptionRepository;
-    private final OrderDailyCounterRepository orderDailyCounterRepository;
-    private final OrderItemRepository orderItemRepository;
-
-//    private final PaymentService paymentService;
+    private final OrderFactory orderFactory;
+    private final OrderPriceCalculator orderPriceCalculator;
+    private final OrderNumberGenerator orderNumberGenerator;
 
     // ====== 주문 생성 ======
     /**
@@ -66,15 +68,21 @@ public class OrderService {
     public Order createOrder(OrderCreateRequest request, Long memberId) {
         Member member = getMemberOrThrow(memberId);
         StoreSimpleDto store = getStoreDtoOrThrow(request.storeId());
-        List<OrderItem> orderItems = createOrderItems(request);
-        Long calculatedTotalPrice = calculateTotalPrice(orderItems);
-        String orderNumber = generateOrderNumber(request);
-        Store minimalStore = createMinimalStore(store);
-        Order order = Order.createOrderEntity(member, minimalStore, orderNumber, calculatedTotalPrice, request, orderItems);
+        List<OrderItem> orderItems = orderFactory.createOrderItems(request);
+        Long calculatedTotalPrice = orderPriceCalculator.calculateTotalPrice(orderItems);
+        String orderNumber = orderNumberGenerator.generateOrderNumber(request);
+        Store minimalStore = orderFactory.createMinimalStore(store);
+        Order order = orderFactory.createOrder(member, minimalStore, orderNumber, calculatedTotalPrice, request);
+
+        // Order 저장
         Order savedOrder = orderRepository.save(order);
-        // paymentService.processPayment(savedOrder);
+
+        // List<OrderItem> 저장, OrderItem은 OrderId가 없으면 에러 발생
+        orderItemService.saveOrderItems(savedOrder.getId(), orderItems);
+
         return savedOrder;
     }
+
 
     // ====== Private Helper Methods ======
     private Member getMemberOrThrow(Long memberId) {
@@ -87,111 +95,62 @@ public class OrderService {
                 .orElseThrow(() -> new OrderException(OrderErrorCode.STORE_NOT_FOUND));
     }
 
-    private List<OrderItem> createOrderItems(OrderCreateRequest request) {
-        return request.orderItems().stream()
-                .map(this::createOrderItemFromRequest)
-                .collect(Collectors.toList());
-    }
-
-    private Long calculateTotalPrice(List<OrderItem> orderItems) {
-        return orderItems.stream()
-                .mapToLong(OrderItem::getFinalItemPrice)
-                .sum();
-    }
-
-    private Store createMinimalStore(StoreSimpleDto storeDto) {
-        return Store.builder()
-                .id(storeDto.getId())
-                .build();
-    }
-
-
 
 
     /**
-     * OrderItemRequest DTO로부터 OrderItem 엔티티를 생성하고 가격을 계산합니다.
+     * [사용자용] 주문 상세 정보를 조회합니다.
      */
-    private OrderItem createOrderItemFromRequest(OrderItemRequest request) {
-        long itemPrice = 0L;
-        String itemName = "";
+    public CustomerOrderDetailResponse getOrderDetail(Long loginMemberId, Long orderId) {
+        Order order = getOrderOrThrow(orderId);
+        validateOrderOwner(order, loginMemberId);
 
-        if (request.itemType() == ItemType.BEVERAGE || request.itemType() == ItemType.COFFEE) {
-            BeverageItem item = beverageItemRepository.findById(request.itemId())
-                    .orElseThrow(() -> new OrderException(OrderErrorCode.ITEM_NOT_FOUND));
-            itemPrice = item.getPrice();
-            itemName = item.getItemNameKo();
-        } else { // DESSERT
-            DessertItem item = dessertItemRepository.findById(request.itemId())
-                    .orElseThrow(() -> new OrderException(OrderErrorCode.ITEM_NOT_FOUND));
-            itemPrice = item.getPrice();
-            itemName = item.getDessertItemNameKo();
-        }
+        List<Long> beverageIds = extractBeverageIds(order);
+        List<Long> dessertIds = extractDessertIds(order);
+        List<Long> optionIds = extractOptionIds(order);
 
-        long optionsTotalPrice = 0L;
-        if (request.options() != null && !request.options().isEmpty()) {
-            List<Long> optionIds = request.options().stream().map(SelectedItemOptionRequest::itemOptionId).toList();
-            Map<Long, ItemOption> itemOptionsMap = itemOptionRepository.findAllById(optionIds).stream()
-                    .collect(Collectors.toMap(ItemOption::getId, option -> option));
+        Map<Long, BeverageItem> beverageMap = beverageItemService.getBeverageByIds(beverageIds)
+                .stream().collect(Collectors.toMap(BeverageItem::getId, item -> item));
+        Map<Long, DessertItem> dessertMap = dessertItemService.getDessertsByIds(dessertIds)
+                .stream().collect(Collectors.toMap(DessertItem::getId, item -> item));
+        Map<Long, ItemOption> optionMap = itemOptionService.getItemOptionsByIds(optionIds)
+                .stream().collect(Collectors.toMap(ItemOption::getId, option -> option));
 
-            optionsTotalPrice = request.options().stream().mapToLong(optReq -> {
-                ItemOption option = itemOptionsMap.get(optReq.itemOptionId());
-                if (option == null) throw new OrderException(OrderErrorCode.ITEM_OPTION_NOT_FOUND);
-                return (long) option.getOptionPrice() * optReq.quantity();
-            }).sum();
-        }
-
-        long finalItemPrice = (itemPrice + optionsTotalPrice) * request.quantity();
-
-        return OrderItem.builder()
-                .itemType(request.itemType())
-                .beverageItemId(request.itemType() != ItemType.DESSERT ? request.itemId() : null)
-                .dessertItemId(request.itemType() == ItemType.DESSERT ? request.itemId() : null)
-                .quantity(request.quantity())
-                .itemName(itemName)
-                .itemPrice(itemPrice)
-                .finalItemPrice(finalItemPrice)
-                .shotQuantity(request.shotQuantity())
-                .selectedSizes(request.selectedSizes())
-                .selectedTemperatures(request.selectedTemperatures())
-                .build();
+        return CustomerOrderDetailResponse.of(order, beverageMap, dessertMap, optionMap);
     }
 
-    /**
-     * 주문번호를 생성합니다.
-     */
-    @Transactional
-    public String generateOrderNumber(OrderCreateRequest request) {
-        LocalDate today = LocalDate.now();
-        OrderDailyCounterId id = new OrderDailyCounterId(today, request.storeId());
-
-        OrderDailyCounter counter = orderDailyCounterRepository.findById(id)
-                .orElseGet(() -> new OrderDailyCounter(id, 0));
-
-        counter.increment();
-        orderDailyCounterRepository.save(counter);
-
-        return "A-" + counter.getCount();
+    private Order getOrderOrThrow(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
     }
 
-    /**
-     * [사용자용] 특정 주문의 상세 정보를 조회합니다.
-     *
-     * @param memberId 로그인한 사용자의 ID (인터셉터로부터 받음)
-     * @param orderId  조회할 주문의 ID
-     * @return 조립된 주문 상세 정보 DTO
-     */
-    @Transactional(readOnly = true)
-    public OrderDetailResponse getOrderDetail(Long memberId, Long orderId) {
-        List<OrderRepository.OrderDetailDto> dtos = orderRepository.findOrderDetailDtoById(orderId);
-
-        if (dtos.isEmpty()) {
-            throw new OrderException(OrderErrorCode.ORDER_NOT_FOUND);
-        }
-        if (!dtos.getFirst().memberId().equals(memberId)) {
+    private void validateOrderOwner(Order order, Long loginMemberId) {
+        if (!order.getMember().getId().equals(loginMemberId)) {
             throw new OrderException(OrderErrorCode.FORBIDDEN_ACCESS_ORDER);
         }
+    }
 
-        return assembleOrderDetail(dtos);
+    private List<Long> extractBeverageIds(Order order) {
+        return order.getOrderItems().stream()
+                .filter(oi -> oi.getBeverageItemId() != null)
+                .map(OrderItem::getBeverageItemId)
+                .distinct()
+                .toList();
+    }
+
+    private List<Long> extractDessertIds(Order order) {
+        return order.getOrderItems().stream()
+                .filter(oi -> oi.getDessertItemId() != null)
+                .map(OrderItem::getDessertItemId)
+                .distinct()
+                .toList();
+    }
+
+    private List<Long> extractOptionIds(Order order) {
+        return order.getOrderItems().stream()
+                .flatMap(oi -> oi.getOrderItemOptions().stream())
+                .map(OrderItemOption::getItemOptionId)
+                .distinct()
+                .toList();
     }
 
     /**
@@ -260,37 +219,19 @@ public class OrderService {
     /**
      * [매장용] 특정 주문의 상세 정보를 조회합니다.
      *
-     * @param storeId 로그인한 매장의 ID (인터셉터로부터 받음)
-     * @param orderId 조회할 주문의 ID
-     * @return 매장용으로 조립된 주문 상세 정보 DTO
+     * @param loginStoreId 로그인한 매장의 ID
+     * @param orderId      조회할 주문의 ID
+     * @return 조회된 Order 엔티티
      */
-    @Transactional(readOnly = true)
-    public OrderDetailResponse getStoreOrderDetail(Long storeId, Long orderId) {
-        List<OrderRepository.OrderDetailDto> dtos = orderRepository.findOrderDetailDtoById(orderId);
+    public Order getStoreOrderDetail(Long loginStoreId, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
 
-        if (dtos.isEmpty()) {
-            throw new OrderException(OrderErrorCode.ORDER_NOT_FOUND);
-        }
-        if (!dtos.getFirst().storeId().equals(storeId)) {
+        if (!order.getStore().getId().equals(loginStoreId)) {
             throw new OrderException(OrderErrorCode.FORBIDDEN_ACCESS_ORDER);
         }
 
-        OrderDetailResponse fullResponse = assembleOrderDetail(dtos);
-
-        return new OrderDetailResponse(
-                fullResponse.orderId(),
-                fullResponse.orderNumber(),
-                fullResponse.orderStatus(),
-                fullResponse.orderDateTime(),
-                fullResponse.pickupType(),
-                fullResponse.totalPrice(),
-                fullResponse.totalItemCount(),
-                fullResponse.storeId(),
-                fullResponse.storeName(),
-                null, // memberId는 제외
-                fullResponse.memberNickname(),
-                fullResponse.orderItems()
-        );
+        return order;
     }
 
     /**
@@ -331,50 +272,5 @@ public class OrderService {
         }
 
         order.updateStatus(newStatus);
-    }
-
-    /**
-     * 계층 구조를 가진 최종 응답 DTO로 조립하는 private 헬퍼 메서드.
-     *
-     * @param dtos DB에서 조회한 평탄화된 데이터 리스트
-     * @return 조립이 완료된 OrderDetailResponse DTO
-     */
-    private OrderDetailResponse assembleOrderDetail(List<OrderRepository.OrderDetailDto> dtos) {
-        OrderRepository.OrderDetailDto firstRow = dtos.getFirst();
-
-        Map<Long, List<ItemOptionDto>> optionsMap = dtos.stream()
-                .filter(dto -> dto.optionName() != null)
-                .collect(Collectors.groupingBy(
-                        OrderRepository.OrderDetailDto::orderItemId,
-                        Collectors.mapping(dto -> new ItemOptionDto(dto.optionName()), Collectors.toList())
-                ));
-
-        Map<Long, OrderItemDto> orderItemsMap = dtos.stream()
-                .collect(Collectors.toMap(
-                        OrderRepository.OrderDetailDto::orderItemId,
-                        dto -> new OrderItemDto(
-                                dto.itemId(),
-                                dto.itemName(),
-                                optionsMap.getOrDefault(dto.orderItemId(), Collections.emptyList()),
-                                dto.finalPrice(),
-                                dto.quantity()
-                        ),
-                        (existing, replacement) -> existing
-                ));
-
-        return new OrderDetailResponse(
-                firstRow.orderId(),
-                firstRow.orderNumber(),
-                firstRow.status(),
-                firstRow.orderDateTime(),
-                firstRow.pickupType(),
-                firstRow.totalPrice(),
-                orderItemsMap.values().stream().mapToLong(OrderItemDto::quantity).sum(),
-                firstRow.storeId(),
-                firstRow.storeName(),
-                firstRow.memberId(),
-                firstRow.memberNickname(),
-                new ArrayList<>(orderItemsMap.values())
-        );
     }
 }

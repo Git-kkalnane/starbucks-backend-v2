@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseTimeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,12 +55,16 @@ public class Order extends BaseTimeEntity {
     @Column(name = "card_number")
     private String cardNumber;
 
+    public void updateStatus(OrderStatus newStatus) {
+        this.status = newStatus;
+    }
+
     /**
-     * Order 엔티티를 생성하는 정적 팩토리 메서드.
-     * OrderItem과의 연관관계를 설정하는 로직을 포함합니다.
+     * 새로운 주문을 생성할때 사용하는  static 팩토리 메서드
+     * OrderService.creatOrder()에서 사용됩니다.
      */
-    public static Order createOrderEntity(Member member, Store store, String orderNumber, Long totalPrice, OrderCreateRequest request, List<OrderItem> orderItems) {
-        Order order = Order.builder()
+    public static Order createNewOrder(Member member, Store store, String orderNumber, Long totalPrice,  OrderCreateRequest request) {
+        return Order.builder()
                 .member(member)
                 .store(store)
                 .orderNumber(orderNumber)
@@ -70,31 +72,8 @@ public class Order extends BaseTimeEntity {
                 .status(OrderStatus.PLACED)
                 .pickupType(request.pickupType())
                 .requestMemo(request.requestMemo())
-                .expectedPickupTime(LocalDateTime.now().plusMinutes(10))
+                .expectedPickupTime(java.time.LocalDateTime.now().plusMinutes(10))
                 .cardNumber(request.cardNumber())
-                .orderItems(new ArrayList<>())
                 .build();
-
-        for (OrderItem orderItem : orderItems) {
-            order.addOrderItem(orderItem);
-        }
-
-        return order;
-    }
-
-    /**
-     * 주문 상태를 변경하는 비즈니스 메서드
-     */
-    public void updateStatus(OrderStatus newStatus) {
-        this.status = newStatus;
-    }
-
-    /**
-     * 연관관계 편의 메서드.
-     * Order에 OrderItem을 추가할 때, OrderItem에도 Order를 설정하여 양방향 관계를 동기화합니다.
-     */
-    public void addOrderItem(OrderItem orderItem) {
-        this.orderItems.add(orderItem);
-        orderItem.setOrder(this);
     }
 }
