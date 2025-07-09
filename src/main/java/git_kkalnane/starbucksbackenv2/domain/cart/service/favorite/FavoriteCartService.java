@@ -4,16 +4,27 @@ import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartErrorCode
 import git_kkalnane.starbucksbackenv2.domain.cart.common.exception.CartException;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.FavoriteCart;
 import git_kkalnane.starbucksbackenv2.domain.cart.domain.FavoriteCartItem;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.CheckFavoriteCartItemDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.CheckFavoriteCartItemOptionDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.FavoriteCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.FavoriteSimpleDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.favorite.CheckFavoriteCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.favorite.FavoriteCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.favorite.FavoriteSimpleResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.favorite.FavoriteCartItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.cart.repository.favorite.FavoriteCartRepository;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemOption;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageItem;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
+import git_kkalnane.starbucksbackenv2.domain.item.repository.ItemOptionRepository;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -25,6 +36,7 @@ public class FavoriteCartService {
     private final FavoriteValidAndCalculatorService favoriteValidAndCalculatorService;
     private final FavoriteCartItemCreateService favoriteCartItemCreateService;
     private final FavoriteCartOptionService favoriteCartOptionService;
+    private final ItemOptionRepository itemOptionRepository;
 
     @Transactional
     public FavoriteSimpleResponse createFavoriteCartItem(FavoriteSimpleDto favoriteSimpleDto, Long memberId) {
@@ -66,6 +78,57 @@ public class FavoriteCartService {
         return favoriteCartItem.getId();
 
 
+    }
+
+    @Transactional
+    public CheckFavoriteCartItemResponse getFavoriteCartItem(Long memberId) {
+        FavoriteCart favoriteCart = favoriteValidAndCalculatorService.findFavoriteCartByMemberId(memberId);
+        List<FavoriteCartItem> cartItems = favoriteCartItemRepository.findAllByFavoriteCartId(favoriteCart.getId());
+
+        List<CheckFavoriteCartItemDto> checkFavoriteCartItemDto = cartItems.stream()
+                .map(cartItem -> {
+                    ItemType itemType = cartItem.getItemType();
+                    String itemName;
+                    String imageUrl;
+
+                    if(itemType == ItemType.BEVERAGE) {
+                        BeverageItem beverageItem = favoriteValidAndCalculatorService.findBeverageItemByItemId(cartItem.getBeverageItemId());
+                        itemName = beverageItem.getItemNameKo();
+
+                        imageUrl = (cartItem.getSelectedTemperatures() == BeverageTemperatureOption.HOT ||
+                                cartItem.getSelectedTemperatures() == BeverageTemperatureOption.HOT_ONLY)
+                                ? beverageItem.getHotImageUrl() :
+                                beverageItem.getIceImageUrl();
+                    } else {
+                        DessertItem dessertItem = favoriteValidAndCalculatorService.findDessertItemByItemId(cartItem.getDessertItemId());
+                        itemName = dessertItem.getDessertItemNameKo();
+                        imageUrl = dessertItem.getImageUrl();
+                    }
+
+                    List<CheckFavoriteCartItemOptionDto> options = cartItem.getFavoriteCartItemOption().stream()
+                            .map(option -> {
+                                ItemOption itemOption = itemOptionRepository.findById(option.getItemOptionId())
+                                        .orElseThrow(() -> new CartException(CartErrorCode.ITEM_OPTION_NOT_FOUND));
+
+                                CheckFavoriteCartItemOptionDto checkFavoriteCartItemOptionDto = new CheckFavoriteCartItemOptionDto(
+                                        option.getItemOptionId(),
+                                        option.getQuantity()
+                                );
+                                return checkFavoriteCartItemOptionDto;
+                            }).toList();
+
+                    return CheckFavoriteCartItemDto.builder()
+                            .favoriteCartItemId(cartItem.getId())
+                            .itemType(itemType)
+                            .itemName(itemName)
+                            .quantity(cartItem.getQuantity())
+                            .imageUrl(imageUrl)
+                            .beverageSizeOption(cartItem.getSelectedSizes())
+                            .beverageTemperatureOption(cartItem.getSelectedTemperatures())
+                            .options(options)
+                            .build();
+                }).toList();
+        return new CheckFavoriteCartItemResponse(checkFavoriteCartItemDto);
     }
 
     @Transactional

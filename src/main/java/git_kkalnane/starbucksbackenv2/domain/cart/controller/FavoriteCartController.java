@@ -3,6 +3,7 @@ package git_kkalnane.starbucksbackenv2.domain.cart.controller;
 import git_kkalnane.starbucksbackenv2.domain.cart.common.success.CartSuccessCode;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.FavoriteCartItemDto;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.request.favorite.FavoriteSimpleDto;
+import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.favorite.CheckFavoriteCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.favorite.FavoriteCartItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.dto.response.favorite.FavoriteSimpleResponse;
 import git_kkalnane.starbucksbackenv2.domain.cart.service.favorite.FavoriteCartService;
@@ -86,4 +87,25 @@ public class FavoriteCartController {
                 .status(HttpStatus.OK)
                 .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_DELETED));
     }
+
+
+    @Operation(
+            summary = "장바구니 상품 조회",
+            description = "로그인한 사용자의 장바구니에 상품을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "장바구니 상품 조회 성공")
+    })
+    @GetMapping
+    public ResponseEntity<SuccessResponse> getItem(
+            @RequestAttribute(name = "memberId") Long memberId
+    ) {
+
+        CheckFavoriteCartItemResponse checkCartItemResponse = favoriteCartService.getFavoriteCartItem(memberId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(SuccessResponse.of(CartSuccessCode.CART_SUCCESS_CHECK, checkCartItemResponse));
+    }
 }
+
