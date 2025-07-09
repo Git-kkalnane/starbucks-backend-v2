@@ -22,9 +22,9 @@ public class BeverageItemService {
      * 모든 음료(커피 포함) 목록을 조회, 정렬, 페이징하여 반환합니다.
      *
      * @param pageable 페이징 및 정렬 정보
-     * @return {@link BeveragePaginationResponse}
+     * @return {@link BeveragePaginationResponse} 객체
      */
-    public BeveragePaginationResponse getAllBeverageItems(Pageable pageable) {
+    public BeveragePaginationResponse getAllBeverages(Pageable pageable) {
         Page<BeverageItem> paginationBeverages = beverageItemRepository.findAllWithSupportedSizes(pageable);
 
         List<BeverageItemDto> beverageItemDtos = paginationBeverages.map(BeverageItemDto::new).getContent();

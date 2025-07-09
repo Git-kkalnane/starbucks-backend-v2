@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class BeverageItem extends BaseTimeEntity {
+
     @Id
     private Long id;
 
