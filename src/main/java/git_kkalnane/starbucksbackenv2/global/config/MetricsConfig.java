@@ -60,9 +60,8 @@ public class MetricsConfig {
             }).description("Resident memory size in bytes (actual usage)").register(registry);
 
             // Process Memory VSS - 컨테이너 메모리 제한값
-            Gauge.builder("process_memory_vss_bytes", this, metrics -> {
-                        return (double) metrics.containerMemoryLimit;
-                    }).description("Virtual memory size in bytes (container limit: 2GB)")
+            Gauge.builder("process_memory_vss_bytes", this, metrics -> (double) metrics.containerMemoryLimit)
+                    .description("Virtual memory size in bytes (container limit: 2GB)")
                     .register(registry);
 
             // Process Memory Swap - 메모리 압박 상황에서의 추정 스왑
