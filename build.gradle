@@ -24,13 +24,34 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Spring Framework 관련 의존성
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    compileOnly 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'org.postgresql:postgresql'
+
+    // Lombok - 어노테이션 기반 코드 생성 라이브러리
+    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // 추가 JVM 프로세스 메트릭 (RSS, VSS, Swap)
+    implementation 'io.github.mweirauch:micrometer-jvm-extras:0.2.2'
+
+    // Prometheus 메트릭 노출
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // DB
+    implementation 'org.postgresql:postgresql'
+
+    // 쿼리 최적화를 위한 QueryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    implementation 'com.querydsl:querydsl-core:5.0.0'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+
+    // 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
@@ -44,19 +65,8 @@ dependencies {
 
     // BCrypt(암호화) 라이브러리
     implementation 'org.mindrot:jbcrypt:0.4'
-
-    //QueryDSL
-    // query dsl 버전 명시해야 jakarta사용 (javax X)
-    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    implementation 'com.querydsl:querydsl-core:5.0.0'
-    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
-    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
-
-    // Spring Actuator
-    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
+
 // Querydsl 빌드 옵션 설정
 def generated = 'src/main/generated'
 
