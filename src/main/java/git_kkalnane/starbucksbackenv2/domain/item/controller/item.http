@@ -14,3 +14,6 @@ GET {{baseUrl}}/items/drinks/104
 
 ### 모든 디저트 목록을 조회합니다.
 GET {{baseUrl}}/items/desserts
+
+### 디저트의 ID 값을 이용해 단일 디저트를 조회합니다.
+GET {{baseUrl}}/items/desserts/202
