@@ -58,12 +58,12 @@ public class NotificationController {
             description = "알림 목록 조회 완료"
     )
     public ResponseEntity<SuccessResponse<?>> fetchNotifications(
-            @RequestAttribute Long memberId,
+            @RequestAttribute Long receiverId,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
         return ResponseEntity.ok(SuccessResponse.of(
                 NotificationSuccessCode.NOTIFICATION_SUBSCRIPTION_RETRIEVED
-                , notificationService.fetchNotificationsByMemberId(memberId, pageable)));
+                , notificationService.fetchNotifications(receiverId, NotificationTargetType.MEMBER, pageable)));
     }
 
 

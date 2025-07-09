@@ -91,8 +91,9 @@ public class NotificationService {
      * @param pageable  페이징 정보
      * @return 알림 목록과 페이징 정보를 포함한 응답
      */
-    public NotificationsResponse fetchNotificationsByMemberId(Long memberId, Pageable pageable){
-        Page<Notification> notifications = notificationRepository.findAllByReceiverId(memberId, pageable);
+    public NotificationsResponse fetchNotifications(Long memberId, NotificationTargetType notificationTargetType, Pageable pageable){
+        Page<Notification> notifications =
+                notificationRepository.findAllByReceiverIdAndNotificationTargetType(memberId, notificationTargetType, pageable);
 
         return NotificationsResponse.builder()
                 .notifications(
