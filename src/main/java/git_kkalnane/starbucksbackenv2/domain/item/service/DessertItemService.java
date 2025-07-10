@@ -20,8 +20,8 @@ public class DessertItemService {
     private final DessertItemRepository dessertItemRepository;
 
     /**
-     * 모든 디저트를 조회, 정렬, 페이징하여 반환합니다.
-     *
+     * 모든 디저트를 조회, 정렬, 페이징하여 반환합니다.<br>
+     * <br>
      * 캐시 적용: 페이징 정보를 키로 사용하여 동일한 페이지 요청 시 캐시된 결과 반환
      *
      * @param pageable 페이징 및 정렬 정보
@@ -43,8 +43,8 @@ public class DessertItemService {
     }
 
     /**
-     * ID로 디저트 상세 정보를 조회합니다.
-     *
+     * ID로 디저트 상세 정보를 조회합니다.<br>
+     * <br>
      * 캐시 적용: 개별 디저트 정보는 자주 조회되므로 캐싱하여 성능 향상
      *
      * @param id 조회할 음료 ID
@@ -60,8 +60,8 @@ public class DessertItemService {
     }
 
     /**
-     * 디저트의 ID 값들을 가지고 있는 리스트를 인수로 받아 DessertItem 객체 리스트를 반환하는 메서드 (OrderService에서 사용)
-     *
+     * 디저트의 ID 값들을 가지고 있는 리스트를 인수로 받아 DessertItem 객체 리스트를 반환하는 메서드 (OrderService에서 사용)<br>
+     * <br>
      * 캐시 적용: ID 리스트를 키로 사용하여 동일한 ID 조합 요청 시 캐시된 결과 반환
      *
      * @param ids 디저트의 ID 값들을 가지고 있는 List

@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 캐시별 개별 설정을 관리하는 Enum
- *
+ * 캐시별 개별 설정을 관리하는 Enum<br>
+ * <br>
  * 각 캐시의 특성에 맞게 TTL(Time To Live)과 최대 크기를 개별 설정
  */
 @Getter
