@@ -38,6 +38,10 @@ dependencies {
     // Prometheus 메트릭 노출
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
+    // 캐시 관련 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
+
     // DB
     implementation 'org.postgresql:postgresql'
 
