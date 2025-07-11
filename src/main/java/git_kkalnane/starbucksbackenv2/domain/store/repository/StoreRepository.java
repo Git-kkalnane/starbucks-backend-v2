@@ -2,6 +2,8 @@ package git_kkalnane.starbucksbackenv2.domain.store.repository;
 
 import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
 import git_kkalnane.starbucksbackenv2.domain.store.dto.StoreSimpleDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,5 +31,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     @Query("SELECT new git_kkalnane.starbucksbackenv2.domain.store.dto.StoreSimpleDto(s.id, s.name, s.address, s.phone, s.openingHours, s.hasDriveThrough, s.seatingCapacity, s.latitude, s.longitude, s.imageUrl, s.crowdLevel) FROM Store s")
     List<StoreSimpleDto> findAllSimpleStores();
+
+    @Query("SELECT new git_kkalnane.starbucksbackenv2.domain.store.dto.StoreSimpleDto(s.id, s.name, s.address, s.phone, s.openingHours, s.hasDriveThrough, s.seatingCapacity, s.latitude, s.longitude, s.imageUrl, s.crowdLevel) FROM Store s")
+    Page<StoreSimpleDto> findAllSimpleStores(Pageable pageable);
 
 }
