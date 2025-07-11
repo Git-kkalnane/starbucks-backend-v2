@@ -81,8 +81,8 @@ public class OrderService {
         savedOrder.setStore(_store);
 
         // List<OrderItem> 저장, OrderItem은 OrderId가 없으면 에러 발생
-        orderItemService.saveOrderItems(savedOrder.getId(), orderItems);
-
+        List<OrderItem> savedOrderItems = orderItemService.saveOrderItems(savedOrder.getId(), orderItems);
+        savedOrder.setOrderItems(savedOrderItems);
         return savedOrder;
     }
 
