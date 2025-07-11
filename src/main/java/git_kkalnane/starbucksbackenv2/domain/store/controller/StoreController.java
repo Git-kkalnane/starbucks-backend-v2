@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 
 @RestController
 @RequestMapping("stores")
@@ -27,7 +25,6 @@ public class StoreController {
     private final StoreService storeService;
 
     /**
-     *
      * @param storeId 조회할 매장의 고유 ID
      * @return 매장의 상세 정보를 담은 응답 DTO와 성공 응답 (HTTP 200 OK)
      */
@@ -51,8 +48,7 @@ public class StoreController {
     }
 
     /**
-     * 페이징 처리된 전체 지점 목록을 조회합니다.
-     * 클라이언트에서 page, size, sort 파라미터를 통해 페이징 및 정렬을 제어할 수 있습니다.
+     * 페이징 처리된 전체 지점 목록을 조회합니다. 클라이언트에서 page, size, sort 파라미터를 통해 페이징 및 정렬을 제어할 수 있습니다.
      *
      * @param pageable 페이징 및 정렬 정보를 담은 객체
      * @return 페이징된 지점 목록 정보를 담은 ResponseEntity
