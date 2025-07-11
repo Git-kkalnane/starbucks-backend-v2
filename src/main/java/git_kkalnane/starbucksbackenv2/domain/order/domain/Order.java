@@ -8,15 +8,25 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "orders",
+       uniqueConstraints = {
+           @UniqueConstraint(columnNames = {"store_id", "order_number", "order_date"})
+       })
 @Getter
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseTimeEntity {
+    @PrePersist
+    public void prePersist() {
+        if (this.orderDate == null) {
+            this.orderDate = LocalDate.now();
+        }
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,8 +42,11 @@ public class Order extends BaseTimeEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
-    @Column(name = "order_number", length = 20, unique = true, nullable = false)
+    @Column(name = "order_number", length = 20, nullable = false)
     private String orderNumber;
+
+    @Column(name = "order_date", nullable = false)
+    private LocalDate orderDate;
 
     @Column(name = "total_price", nullable = false)
     private Long totalPrice;
