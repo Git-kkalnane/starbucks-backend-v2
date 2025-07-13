@@ -23,7 +23,7 @@ public class FavoriteCartItemCreateService {
 
     public FavoriteCartItem createFavoriteCartItem(FavoriteCart favoriteCart, FavoriteSimpleDto dto, Long singleTotal) {
         Long beverageItemId = null, dessertItemId = null;
-        String itemName="", description="";
+        String itemName, description;
         if (dto.itemType() == ItemType.BEVERAGE) {
             BeverageItem beverage = beverageItemRepository.findById(dto.itemId())
                     .orElseThrow(() -> new CartException(CartErrorCode.INVALID_ITEM));

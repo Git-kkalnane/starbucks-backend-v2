@@ -11,6 +11,8 @@ import java.util.List;
 @Builder
 public record CheckFavoriteCartItemDto(
         Long favoriteCartItemId,
+        Long itemId,
+        Long totalPrice,
         ItemType itemType,
         String itemName,
         int quantity,

@@ -10,6 +10,8 @@ import java.util.List;
 @Builder
 public record CheckCartItemDto(
         Long cartItemId,
+        Long itemId,
+        Long totalPrice,
         ItemType itemType,
         String itemName,
         int quantity,

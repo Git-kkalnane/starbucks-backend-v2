@@ -5,6 +5,7 @@ import git_kkalnane.starbucksbackenv2.domain.cart.repository.query.CartQueryRepo
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long>, CartQueryRepository {
     boolean existsByMemberId(Long memberId);
