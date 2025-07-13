@@ -18,6 +18,7 @@ import java.util.Map;
  */
 public record CustomerOrderDetailResponse(
         int totalCount,
+        String orderNumber,
         StoreInfo storeInfo,
         OrderStatus orderStatus,
         PickupType pickupType,
@@ -27,6 +28,7 @@ public record CustomerOrderDetailResponse(
     public static CustomerOrderDetailResponse of(Order order, Map<Long, BeverageItem> beverageMap, Map<Long, DessertItem> dessertMap, Map<Long, ItemOption> optionMap) {
         return new CustomerOrderDetailResponse(
                 order.getOrderItems().size(),
+                order.getOrderNumber(),
                 StoreInfo.from(order.getStore()),
                 order.getStatus(),
                 order.getPickupType(),
