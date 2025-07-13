@@ -17,6 +17,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class OrderItem extends BaseTimeEntity {
+    public void setOrderItemOptions(List<OrderItemOption> orderItemOptions) {
+        this.orderItemOptions = orderItemOptions;
+    }
     @Builder
     public OrderItem(Long id, Order order, List<OrderItemOption> orderItemOptions, ItemType itemType, String itemName,
         Long beverageItemId, Long dessertItemId, Integer quantity, Long itemPrice, Long finalItemPrice,
