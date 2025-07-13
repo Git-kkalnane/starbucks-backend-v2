@@ -17,7 +17,6 @@ import lombok.ToString;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@ToString
 @Table(name = "members")
 public class Member extends git_kkalnane.starbucksbackenv2.global.entity.BaseTimeEntity {
 

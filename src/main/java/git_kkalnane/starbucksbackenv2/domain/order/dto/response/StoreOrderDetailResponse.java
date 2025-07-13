@@ -1,7 +1,12 @@
 package git_kkalnane.starbucksbackenv2.domain.order.dto.response;
 
+import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemOption;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageSizeOption;
+import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
 import git_kkalnane.starbucksbackenv2.domain.order.domain.Order;
 import git_kkalnane.starbucksbackenv2.domain.order.domain.OrderItem;
+import git_kkalnane.starbucksbackenv2.domain.order.domain.OrderItemOption;
 import git_kkalnane.starbucksbackenv2.domain.order.domain.OrderStatus;
 import git_kkalnane.starbucksbackenv2.domain.order.domain.PickupType;
 
@@ -19,7 +24,6 @@ import java.util.List;
  * @param orderRequestMemo        요청 사항
  * @param orderExpectedPickupTime 예상 픽업 시간
  * @param storeName               매장 이름
- * @param memberNickname          주문자 닉네임
  * @param orderItems              주문 상품 목록
  */
 public record StoreOrderDetailResponse(
@@ -42,11 +46,38 @@ public record StoreOrderDetailResponse(
      */
     private record OrderItemSummary(
             String itemName,
+            Long finalPrice,
+            Long itemPrice,
+            BeverageSizeOption sizeOption,
+            BeverageTemperatureOption temperatureOption,
+            List<OrderItemOptionSummary> itemOptions,
+            ItemType itemType,
             Integer quantity
     ) {
+        private record OrderItemOptionSummary(
+            Long id,
+            Long itemOptionId,
+            int quantity
+        ) {
+            public static OrderItemOptionSummary from(OrderItemOption option) {
+                return new OrderItemOptionSummary(
+                    option.getId(),
+                    option.getItemOptionId(),
+                    option.getQuantity()
+                );
+            }
+        }
         public static OrderItemSummary from(OrderItem orderItem) {
             return new OrderItemSummary(
                     orderItem.getItemName(),
+                    orderItem.getFinalItemPrice(),
+                    orderItem.getItemPrice(),
+                    orderItem.getSelectedSize(),
+                    orderItem.getSelectedTemperature(),
+                    orderItem.getOrderItemOptions().stream()
+                        .map(OrderItemOptionSummary::from)
+                        .toList(),
+                    orderItem.getItemType(),
                     orderItem.getQuantity()
             );
         }
