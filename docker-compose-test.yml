@@ -4,7 +4,7 @@ services:
   starbucks-backend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-test
     container_name: starbucks-backend
 
     # 메모리 제한 추가 (JVM -Xmx1024m + 시스템 오버헤드 고려하여 2GB 설정)
