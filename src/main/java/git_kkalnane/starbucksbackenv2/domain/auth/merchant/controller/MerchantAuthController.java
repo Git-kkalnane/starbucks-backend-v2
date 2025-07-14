@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/merchant/auth")
 @Tag(name = "Auth (Store)", description = "점주(매장) 인증/인가 관련 API")

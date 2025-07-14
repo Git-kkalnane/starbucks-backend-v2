@@ -27,8 +27,12 @@ public class OrderNumberGenerator {
         LocalDate today = LocalDate.now();
         OrderDailyCounterId id = new OrderDailyCounterId(today, request.storeId());
 
-        OrderDailyCounter counter = orderDailyCounterRepository.findById(id)
-                .orElseGet(() -> new OrderDailyCounter(id, 0));
+        OrderDailyCounter counter = orderDailyCounterRepository.findByIdWithPessimisticLock(id)
+            .orElseGet(() -> {
+                OrderDailyCounter newCounter = new OrderDailyCounter(id, 0);
+                orderDailyCounterRepository.saveAndFlush(newCounter);
+                return newCounter;
+            });
 
         counter.increment();
         orderDailyCounterRepository.save(counter);

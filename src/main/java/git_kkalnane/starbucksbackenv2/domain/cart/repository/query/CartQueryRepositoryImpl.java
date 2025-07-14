@@ -82,7 +82,6 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
 
         return price == null ? 0L : price;
         }
-
 }
 
 

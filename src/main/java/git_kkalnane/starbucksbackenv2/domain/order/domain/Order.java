@@ -93,4 +93,8 @@ public class Order extends BaseTimeEntity {
     public void setStore(Store store) {
         this.store = store;
     }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
 }

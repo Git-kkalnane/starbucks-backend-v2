@@ -202,3 +202,5 @@ src/main/resources/application-dev.yml
 src/main/resources/application-prod.yml
 htmlReport
 .editorconfig
+
+docker-compose.yml

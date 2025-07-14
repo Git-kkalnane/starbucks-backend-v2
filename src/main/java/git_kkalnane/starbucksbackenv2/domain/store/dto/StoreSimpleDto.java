@@ -1,11 +1,16 @@
 package git_kkalnane.starbucksbackenv2.domain.store.dto;
 
 import java.math.BigDecimal;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Setter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class StoreSimpleDto {
     private Long id;
     private String name;

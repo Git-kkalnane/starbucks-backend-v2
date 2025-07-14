@@ -1,6 +1,5 @@
 package git_kkalnane.starbucksbackenv2.domain.auth.member.controller;
 
-
 import git_kkalnane.starbucksbackenv2.domain.auth.common.dto.request.LoginRequest;
 import git_kkalnane.starbucksbackenv2.domain.auth.common.jwt.dto.TokenInfo;
 import git_kkalnane.starbucksbackenv2.domain.auth.common.success.AuthSuccessCode;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @RestController
 @RequiredArgsConstructor

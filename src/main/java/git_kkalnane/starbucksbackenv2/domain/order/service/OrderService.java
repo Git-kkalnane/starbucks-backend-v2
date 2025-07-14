@@ -88,6 +88,7 @@ public class OrderService {
 
         // List<OrderItem> 저장, OrderItem은 OrderId가 없으면 에러 발생
         List<OrderItem> savedOrderItems = orderItemService.saveOrderItems(savedOrder.getId(), orderItems);
+
         return savedOrder;
     }
 
@@ -226,7 +227,7 @@ public class OrderService {
 
     public Order getStoreOrderDetail(Long loginStoreId, Long orderId) {
         Order order = orderRepository.findOrderWithItemsById(orderId)
-            .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
 
         if (!order.getStore().getId().equals(loginStoreId)) {
             throw new OrderException(OrderErrorCode.FORBIDDEN_ACCESS_ORDER);

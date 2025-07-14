@@ -3,7 +3,9 @@ package git_kkalnane.starbucksbackenv2.domain.notification.service;
 
 import git_kkalnane.starbucksbackenv2.domain.notification.common.success.NotificationSuccessCode;
 import git_kkalnane.starbucksbackenv2.domain.notification.domain.*;
-import git_kkalnane.starbucksbackenv2.domain.notification.domain.vo.*;
+import git_kkalnane.starbucksbackenv2.domain.notification.domain.vo.NotificationEvent;
+import git_kkalnane.starbucksbackenv2.domain.notification.domain.vo.NotificationReceiver;
+import git_kkalnane.starbucksbackenv2.domain.notification.domain.vo.NotificationSender;
 import git_kkalnane.starbucksbackenv2.domain.notification.dto.request.OrderNotificationSendRequest;
 import git_kkalnane.starbucksbackenv2.domain.notification.dto.response.NotificationItemResponse;
 import git_kkalnane.starbucksbackenv2.domain.notification.dto.response.NotificationResponse;
@@ -51,11 +53,13 @@ public class NotificationService {
 
         SseEmitterId sseEmitterId = SseEmitterId.of(receiverId, notificationTargetType);
 
-        SseEmitter emitter = emitterRepository.save(sseEmitterId, new SseEmitter(DEFAULT_TIMEOUT));
+        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 
         deleteSseEmitterIfExists(sseEmitterId);
 
         registerSseEmitterEvent(sseEmitterId, emitter);
+
+        emitterRepository.save(sseEmitterId, emitter);
 
         // 503 에러를 방지하기 위한 구독용 더미 이벤트 전송
         NotificationEvent event = NotificationEvent.of
@@ -137,7 +141,6 @@ public class NotificationService {
      * @param <T>                        아이템 타입
      * @return 생성된 알림 엔티티
      */
-    // TODO: 매장에 전달하는 알림은 데이터 전송 용도로 활용할 것
     @Transactional
     public <T> Notification sendNotification(T item, String title, String message,
                                              Long senderId, Long receiverId,
@@ -152,7 +155,6 @@ public class NotificationService {
                         NotificationSender.of(senderId),
                         notificationType, notificationTargetType);
 
-        // TODO : 스프링 이벤트 분리를 통해 비동기 작업으로 처리
         notificationRepository.save(notification);
 
         Map<String, SseEmitter> emitters = emitterRepository
@@ -160,7 +162,6 @@ public class NotificationService {
                         receiverId,
                         notificationTargetType);
 
-        // TODO: 트랜잭션 실패로 인한 롤백 처리 등의 안정성 고려하기
         emitters.forEach(
                 (key, emitter) -> {
                     NotificationItemResponse<T> responseDto = notification.toDto(item);
@@ -201,8 +202,6 @@ public class NotificationService {
                         NotificationSender.of(senderId),
                         notificationType, notificationTargetType);
 
-
-        // TODO : 스프링 이벤트 분리를 통해 비동기 작업으로 처리
         notificationRepository.save(notification);
 
         Map<String, SseEmitter> emitters = emitterRepository
@@ -210,7 +209,6 @@ public class NotificationService {
                         receiverId,
                         notificationTargetType);
 
-        // TODO: 트랜잭션 실패로 인한 롤백 처리 등의 안정성 고려하기
         emitters.forEach(
                 (key, emitter) -> {
                     NotificationResponse responseDto = notification.toDto();
@@ -245,7 +243,6 @@ public class NotificationService {
         return sendNotification(
                 notificationType.getTitle(),
                 notificationType.getMessage(order.getOrderNumber()),
-                // TODO: 현재는 주문 완료 메시지만 반환할 수 있음. 추후 리팩토링을 통해 코드를 분리할 수 있도록 수정
                 requestDto.getSenderId(),
                 requestDto.getReceiverId(),
                 notificationType,
@@ -264,16 +261,15 @@ public class NotificationService {
     private void send(SseEmitter emitter, NotificationEvent event, String emitterId, Object data) {
         try {
             GlobalLogger.info("SSE 전송 시작", "emitterId: " + emitterId + ", event: " + event.value() + ", data: " + data);
-            
-            // TODO: emitter.send()는 동기작업으로 쓰레드를 블로킹한다. 다른 쓰레드에 작업을 할당하여 동기작업을 수행해야 한다.
+
             emitter.send(SseEmitter.event()
                     .id(event.value())
                     .name("sse")
                     .data(data)
             );
-            
+
             GlobalLogger.info("SSE 전송 성공", "emitterId: " + emitterId);
-            
+
         } catch (IOException exception) {
             GlobalLogger.error("SSE Emitter 전송 실패 - IOException", exception);
             GlobalLogger.error("SSE 전송 실패 상세", "emitterId: " + emitterId + ", event: " + event.value() + ", error: " + exception.getMessage());

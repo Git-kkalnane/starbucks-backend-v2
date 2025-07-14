@@ -46,6 +46,8 @@ class CartTest {
     @Autowired
     private CartService cartService;
 
+    // Github Actions 워크플로를 통과하지 못하는 테스트
+
     @BeforeEach
     void setup() {
         // 1. 회원가입 + 카트 자동 생성

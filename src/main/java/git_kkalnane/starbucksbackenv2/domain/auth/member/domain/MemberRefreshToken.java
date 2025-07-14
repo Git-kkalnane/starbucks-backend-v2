@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 public class MemberRefreshToken {
+
     @Builder
     MemberRefreshToken(Long id, Long memberId, String token, Date expiration) {
         this.id = id;
@@ -26,7 +27,6 @@ public class MemberRefreshToken {
         this.token = token;
         this.expiration = expiration;
     }
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

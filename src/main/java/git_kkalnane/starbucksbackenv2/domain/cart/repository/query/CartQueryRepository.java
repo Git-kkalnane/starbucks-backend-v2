@@ -13,5 +13,4 @@ public interface CartQueryRepository {
     Optional<Cart> findByMemberId(Long memberId);
     Long calculateTotalPriceWithOption(Long itemId, List<CartItemOptionDto> optionDtos);
     Long calculatePrice(Long itemId);
-
 }
