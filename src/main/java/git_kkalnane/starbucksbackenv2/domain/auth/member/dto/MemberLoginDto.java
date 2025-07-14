@@ -1,6 +1,5 @@
 package git_kkalnane.starbucksbackenv2.domain.auth.member.dto;
 
-
 import git_kkalnane.starbucksbackenv2.domain.auth.member.dto.response.MemberLoginResponse;
 
 public record MemberLoginDto(String accessToken, String refreshToken, String name, String nickname, String email) {
