@@ -13,7 +13,7 @@
   "environment": [
     {
       "name": "DB_URL",
-      "value": "jdbc:postgresql:/<RDS_ENDPOINT>:5432/starbucks"
+      "value": "jdbc:postgresql://<RDS_ENDPOINT>:5432/starbucks"
     },
     {
       "name": "DB_USERNAME",
