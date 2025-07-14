@@ -59,6 +59,7 @@ public class FavoriteCartItem extends BaseTimeEntity{
     private String imageUrl;
 
     @OneToMany(mappedBy = "favoriteCartItem",cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<FavoriteCartItemOption> favoriteCartItemOption = new ArrayList<>();
 
     @Column(name = "is_deleted")

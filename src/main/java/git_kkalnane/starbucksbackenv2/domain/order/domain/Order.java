@@ -53,6 +53,7 @@ public class Order extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private OrderStatus status = OrderStatus.PLACED;
 
     @Enumerated(EnumType.STRING)
