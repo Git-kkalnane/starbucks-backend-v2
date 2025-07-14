@@ -24,6 +24,11 @@ public class MerchantAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
+
+        // Preflight OPTIONS 요청인 경우 인증 검증을 건너뜁니다.
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
         GlobalLogger.info(REQUEST_URI_LOG_PREFIX, request.getMethod(), request.getRequestURI());
 
         // HTTP 요청의 Authorization 헤더의 값을 가져온다.

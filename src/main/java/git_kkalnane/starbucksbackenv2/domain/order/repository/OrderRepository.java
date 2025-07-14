@@ -36,7 +36,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      */
     Page<Order> findByStoreIdAndStatusIn(Long storeId, Collection<OrderStatus> statuses, Pageable pageable);
 
-    @Query("SELECT o FROM Order o JOIN FETCH o.orderItems WHERE o.id = :orderId")
+    @Query("SELECT o FROM Order o " +
+        "JOIN FETCH o.member " +
+        "JOIN FETCH o.orderItems oi " +
+        "WHERE o.id = :orderId")
     Optional<Order> findOrderWithItemsById(@Param("orderId") Long orderId);
-
 }

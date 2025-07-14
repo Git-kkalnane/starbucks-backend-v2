@@ -16,6 +16,7 @@ import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
  * @param totalPrice      주문 총액
  */
 public record CustomerCurrentOrderResponse(
+        long orderId,
         int totalCount,
         StoreInfo storeInfo,
         String orderNumber,
@@ -29,6 +30,7 @@ public record CustomerCurrentOrderResponse(
                 .sum();
 
         return new CustomerCurrentOrderResponse(
+                order.getId(),
                 totalItemCount,
                 StoreInfo.from(order.getStore()),
                 order.getOrderNumber(),

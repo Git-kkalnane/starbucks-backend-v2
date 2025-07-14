@@ -21,11 +21,17 @@ import git_kkalnane.starbucksbackenv2.domain.order.dto.request.SelectedItemOptio
 import git_kkalnane.starbucksbackenv2.domain.order.dto.response.*;
 import git_kkalnane.starbucksbackenv2.domain.order.repository.OrderDailyCounterRepository;
 import git_kkalnane.starbucksbackenv2.domain.order.repository.OrderRepository;
+import git_kkalnane.starbucksbackenv2.domain.order.repository.OrderItemOptionRepository;
+import java.util.List;
+import java.util.Map;
+import java.util.Collections;
+import java.util.stream.Collectors;
 //import git_kkalnane.starbucksbackenv2.domain.payment.service.PaymentService;
 import git_kkalnane.starbucksbackenv2.domain.store.domain.Store;
 import git_kkalnane.starbucksbackenv2.domain.store.dto.StoreSimpleDto;
 import git_kkalnane.starbucksbackenv2.domain.store.repository.StoreRepository;
 import java.util.ArrayList;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -82,7 +88,7 @@ public class OrderService {
 
         // List<OrderItem> 저장, OrderItem은 OrderId가 없으면 에러 발생
         List<OrderItem> savedOrderItems = orderItemService.saveOrderItems(savedOrder.getId(), orderItems);
-        savedOrder.setOrderItems(savedOrderItems);
+
         return savedOrder;
     }
 
@@ -219,13 +225,6 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * [매장용] 특정 주문의 상세 정보를 조회합니다. 이 때, 요청한 매장이 해당 주문을 조회할 권한이 있는지 확인합니다. <br/>
-     *
-     * @param loginStoreId 로그인한 매장의 ID
-     * @param orderId      조회할 주문의 ID
-     * @return 조회된 Order 엔티티
-     */
     public Order getStoreOrderDetail(Long loginStoreId, Long orderId) {
         Order order = orderRepository.findOrderWithItemsById(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
@@ -234,6 +233,22 @@ public class OrderService {
             throw new OrderException(OrderErrorCode.FORBIDDEN_ACCESS_ORDER);
         }
 
+        // 2단계 조회: orderItems의 id 목록 추출
+        List<Long> orderItemIds = order.getOrderItems().stream()
+            .map(OrderItem::getId)
+            .collect(Collectors.toList());
+        if (!orderItemIds.isEmpty()) {
+            // orderItemOptions 일괄 조회
+            List<OrderItemOption> options = orderItemOptionRepository.findByOrderItemIdIn(orderItemIds);
+            Map<Long, List<OrderItemOption>> optionMap = options.stream()
+                .collect(Collectors.groupingBy(opt -> opt.getOrderItem().getId()));
+            // 각 orderItem에 옵션 매핑
+            order.getOrderItems().forEach(item -> {
+                List<OrderItemOption> opts = optionMap.getOrDefault(item.getId(), Collections.emptyList());
+                item.setOrderItemOptions(opts);
+            });
+        }
+        order.getMember().getNickname();
         return order;
     }
 
