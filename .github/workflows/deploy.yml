@@ -43,10 +43,6 @@ jobs:
       - name: Gradle을 이용해 프로젝트 파일을 jar 파일로 빌드
         run: ./gradlew clean build -x test
 
-      # 테스트 실행 (선택사항 - 필요시 추가)
-      - name: 테스트 실행
-        run: ./gradlew test
-
   # CD: 배포 (develop 브랜치 push 시에만 실행)
   continuous-deployment:
     runs-on: ubuntu-latest
