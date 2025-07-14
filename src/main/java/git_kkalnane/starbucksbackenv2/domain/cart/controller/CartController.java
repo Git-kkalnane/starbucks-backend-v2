@@ -73,7 +73,7 @@ public class CartController {
             @ApiResponse(responseCode = "200", description = "장바구니 상품 삭제 성공")
     })
 
-    @DeleteMapping(value = "deleteItem")
+    @DeleteMapping(value = "/deleteItem")
     public ResponseEntity<SuccessResponse> deleteItem(
             @RequestBody DeleteCartItemDto deleteCartItemDto,
             @RequestAttribute(name = "memberId") Long memberId) {
