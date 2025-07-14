@@ -12,4 +12,4 @@ INSERT INTO stores (
       (7, NULL, NULL, '서울 강남구 압구정로 328', 'LOW', false, 'https://image.istarbucks.co.kr//upload/store/2020/10/%5B9545%5D_20201027103930_nyjip.jpg', NULL, NULL, '압구정로데오역점', '08:00-22:00', '1522-3236', 45, 7),
       (8, NULL, NULL, '서울 강남구 테헤란로 145', 'LOW', false, 'https://image.istarbucks.co.kr//upload/store/2022/05/%5B4293%5D_20220511055826_8m4a3.jpg', NULL, NULL, '역삼역점', '07:00-22:00', '1522-3237', 55, 8),
       (9, NULL, NULL, '서울 강남구 도곡로 112', 'LOW', false, 'https://image.istarbucks.co.kr//upload/store/2023/01/%5B3009%5D_20230118065252_xpepz.jpg', NULL, NULL, '도곡DT점', '07:00-21:00', '1522-3238', 25, 9),
-      (10, NULL, NULL,	'서울 강남구 테헤란로 334',	'LOW',	false,	'https://image.istarbucks.co.kr//upload/store/2020/05/%5B9308%5D_20200508124414_siviz.jpg',	NULL,	NULL,'선릉역점',	'07:00-22:00',	'1522-3239',	'50',	10)
+      (10, NULL, NULL,	'서울 강남구 테헤란로 334',	'LOW',	false,	'https://image.istarbucks.co.kr//upload/store/2020/05/%5B9308%5D_20200508124414_siviz.jpg',	NULL,	NULL,'선릉역점',	'07:00-22:00',	'1522-3239',	50, 10)
