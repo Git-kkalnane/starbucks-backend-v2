@@ -22,6 +22,7 @@ import git_kkalnane.starbucksbackenv2.domain.item.domain.ItemType;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageItem;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.beverage.BeverageTemperatureOption;
 import git_kkalnane.starbucksbackenv2.domain.item.domain.dessert.DessertItem;
+import git_kkalnane.starbucksbackenv2.domain.item.repository.BeverageItemRepository;
 import git_kkalnane.starbucksbackenv2.domain.item.repository.ItemOptionRepository;
 import git_kkalnane.starbucksbackenv2.domain.member.domain.Member;
 import git_kkalnane.starbucksbackenv2.domain.member.repository.MemberRepository;
@@ -45,6 +46,7 @@ public class CartService {
     private final CartOptionService cartOptionService;
     private final CartItemCreateService cartItemCreateService;
     private final ItemOptionRepository itemOptionRepository;
+    private final BeverageItemRepository beverageItemRepository;
 
     /**
      * 서비스 로직이 너무 길어져, 클래스를 따로 만들어 두어 간소화를 해보았습니다.
@@ -135,11 +137,13 @@ public class CartService {
         List<CheckCartItemDto> checkCartItemDtos = cartItems.stream()
                 .map(cartItem -> {
                     ItemType itemType = cartItem.getItemType();
+                    Long itemId;
                     String itemName;
                     String imageUrl = cartItem.getImageUrl();
 
                     if (itemType == ItemType.BEVERAGE) {
                         BeverageItem beverageItem = validAndCalculatorService.findBeverageItemByItemId(cartItem.getBeverageItemId());
+                        itemId = beverageItem.getId();
                         itemName = beverageItem.getItemNameKo();
 
                         // 온도에 따른 이미지 처리 로직 간소화
@@ -149,6 +153,7 @@ public class CartService {
                                 : beverageItem.getIceImageUrl();
                     } else {
                         DessertItem dessertItem = validAndCalculatorService.findDessertItemByItemId(cartItem.getDessertItemId());
+                        itemId = dessertItem.getId();
                         itemName = dessertItem.getDessertItemNameKo();
                         imageUrl = dessertItem.getImageUrl();
                     }
@@ -165,8 +170,13 @@ public class CartService {
                                 return checkCartItemOptionDto;
                             }).toList();
 
+                    Long totalPrice = calculateCartTotalPrice(cart.getId(), memberId);
+
+
                     return CheckCartItemDto.builder()
                             .cartItemId(cartItem.getId())
+                            .itemId(itemId)
+                            .totalPrice(totalPrice)
                             .itemType(itemType)
                             .itemName(itemName)
                             .quantity(cartItem.getQuantity())
@@ -197,6 +207,17 @@ public class CartService {
                 .member(member)
                 .build();
         return cartRepository.save(cart);
+    }
+
+    public Long calculateCartTotalPrice(Long cartId, Long memberId) {
+        Cart cart = validAndCalculatorService.findCartByMemberId(memberId);
+
+        return cart.getCartItems().stream()
+                .mapToLong(cartItem -> {
+                    Long itemTotal = cartItem.getItemPrice() * cartItem.getQuantity(); // 옵션 포함된 가격
+                    System.out.println("itemTotal = " + itemTotal);
+                    return itemTotal;
+                }).sum();
     }
 
 }
