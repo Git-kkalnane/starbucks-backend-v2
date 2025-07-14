@@ -34,34 +34,28 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-        final String[] SWAGGER_PATH = {
-                "/swagger-ui.html",
-                "/swagger-ui/**",
-                "/v3/api-docs/**"
-        };
+        final String[] SWAGGER_PATH = {"/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**"};
 
-        registry.addInterceptor(memberAuthInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns(SWAGGER_PATH) // Swagger 관련 모든 경로 제외
-                .excludePathPatterns("/actuator/**")
-                .excludePathPatterns("/items/**", "/stores/**")    // item과 매장 정보 GET 관련 제외
-                .excludePathPatterns("/members/signup", "/auth/login")     // 고객 회원가입, 로그인 엔드포인트 제외
-                .excludePathPatterns("/merchant/**");
+        registry.addInterceptor(memberAuthInterceptor).addPathPatterns("/**")
+                        .excludePathPatterns(SWAGGER_PATH) // Swagger 관련 모든 경로 제외
+                        .excludePathPatterns("/actuator/**")
+                        .excludePathPatterns("/items/**", "/stores/**") // item과 매장 정보 GET 관련 제외
+                        .excludePathPatterns("/members/signup", "/auth/login") // 고객 회원가입, 로그인 엔드포인트
+                                                                               // 제외
+                        .excludePathPatterns("/merchant/**");
 
-        registry.addInterceptor(merchantAuthInterceptor)
-                .addPathPatterns("/merchant/**")
-                .excludePathPatterns("/merchant/signup", "/merchant/auth/login") // 매장 회원가입, 로그인 엔드포인트 제외
+        registry.addInterceptor(merchantAuthInterceptor).addPathPatterns("/merchant/**")
+                        .excludePathPatterns("/merchant/signup", "/merchant/auth/login") // 매장 회원가입,
+                                                                                         // 로그인
+                                                                                         // 엔드포인트 제외
         ;
     }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns(allowedOrigins.split(","))
-                .allowedMethods(allowedMethods.split(","))
-                .allowedHeaders(allowedHeaders)
-                .exposedHeaders("Authorization", "Set-Cookie")
-                .allowCredentials(true)
-                .maxAge(maxAge);
+        registry.addMapping("/**").allowedOriginPatterns("*")
+                        .allowedMethods(allowedMethods.split(",")).allowedHeaders(allowedHeaders)
+                        .exposedHeaders("Authorization", "Set-Cookie").allowCredentials(true)
+                        .maxAge(maxAge);
     }
 }
