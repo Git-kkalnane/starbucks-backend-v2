@@ -9,5 +9,23 @@
       "ContainerPort": 8080,
       "HostPort": 80
     }
+  ],
+  "environment": [
+    {
+      "name": "DB_URL",
+      "value": "jdbc:postgresql:/<RDS_ENDPOINT>:5432/starbucks"
+    },
+    {
+      "name": "DB_USERNAME",
+      "value": "<DB_USERNAME>"
+    },
+    {
+      "name": "DB_PASSWORD",
+      "value": "<DB_PASSWORD>"
+    },
+    {
+      "name": "SPRING_PROFILES_ACTIVE",
+      "value": "dev"
+    }
   ]
 }
