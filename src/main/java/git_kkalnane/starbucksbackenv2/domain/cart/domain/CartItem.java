@@ -35,6 +35,7 @@ public class CartItem extends BaseTimeEntity{
     private Long dessertItemId;
 
     @Column(name = "quantity", nullable = false)
+    @Builder.Default
     private int quantity = 1;
 
     @Column(name = "final_item_price", nullable = false)
@@ -44,6 +45,7 @@ public class CartItem extends BaseTimeEntity{
     private Long itemPrice;
 
     @Column(name = "shot_quantity")
+    @Builder.Default
     private Long shotQuantity = 1L;
 
     @Enumerated(EnumType.STRING)

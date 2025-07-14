@@ -61,6 +61,7 @@ public class OrderService {
     private final OrderFactory orderFactory;
     private final OrderPriceCalculator orderPriceCalculator;
     private final OrderNumberGenerator orderNumberGenerator;
+    private final OrderItemOptionRepository orderItemOptionRepository;
 
     // ====== 주문 생성 ======
     /**
