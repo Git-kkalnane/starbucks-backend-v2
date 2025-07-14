@@ -112,10 +112,20 @@ jobs:
           DB_USERNAME: ${{ secrets.MY_DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.MY_DB_PASSWORD }}
         run: |
+          echo "=== DEBUG: 환경 변수 확인 ==="
+          echo "RDS_ENDPOINT length: ${#RDS_ENDPOINT}"
+          echo "DB_USERNAME length: ${#DB_USERNAME}"
+          echo "DB_PASSWORD length: ${#DB_PASSWORD}"
+          echo "RDS_ENDPOINT starts with: ${RDS_ENDPOINT:0:10}..."
+          echo "=== Dockerrun.aws.json 수정 전 ==="
+          cat Dockerrun.aws.json
+          echo "=== 수정 실행 ==="
           sed -i "s|<IMAGE_NAME>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" Dockerrun.aws.json
           sed -i "s|<RDS_ENDPOINT>|$RDS_ENDPOINT|g" Dockerrun.aws.json
           sed -i "s|<DB_USERNAME>|$DB_USERNAME|g" Dockerrun.aws.json
           sed -i "s|<DB_PASSWORD>|$DB_PASSWORD|g" Dockerrun.aws.json
+          echo "=== Dockerrun.aws.json 수정 후 ==="
+          cat Dockerrun.aws.json
 
       - name: 현재 시간정보 획득
         uses: josStorer/get-current-time@v2
