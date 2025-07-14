@@ -1,6 +1,5 @@
 package git_kkalnane.starbucksbackenv2.domain.auth.merchant.service;
 
-
 import git_kkalnane.starbucksbackenv2.domain.auth.common.dto.request.LoginRequest;
 import git_kkalnane.starbucksbackenv2.domain.auth.common.exception.AuthErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.auth.common.exception.AuthException;
@@ -13,12 +12,10 @@ import git_kkalnane.starbucksbackenv2.domain.auth.merchant.repository.MerchantRe
 import git_kkalnane.starbucksbackenv2.domain.merchant.domain.Merchant;
 import git_kkalnane.starbucksbackenv2.domain.merchant.repository.MerchantRepository;
 import git_kkalnane.starbucksbackenv2.global.utils.Encryptor;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +38,7 @@ public class MerchantAuthService {
         // 로그인 요청에 포함된 이메일을 가진 멤버가 존재하는지 조회
         // 이 과정에서 이메일이 존재하지 않을 경우 예외가 발생한다.
         Merchant merchant = merchantRepository.findByEmail(request.email())
-                .orElseThrow(() -> new AuthException(AuthErrorCode.EMAIL_INVALID_EXCEPTION));
+            .orElseThrow(() -> new AuthException(AuthErrorCode.EMAIL_INVALID_EXCEPTION));
 
         // 로그인 요청에 포함된 비밀번호가 DB에 저장된 비밀번호와 일치하는지 검증
         if (!encryptor.isMatch(request.password(), merchant.getPasswordHash())) {
@@ -61,7 +58,7 @@ public class MerchantAuthService {
      * 생성된 refreshToken을 refreshTokenRepository에 저장하는 메서드
      *
      * @param merchantId 매장 ID (식별자)
-     * @param tokenInfo TokenInfo DTO 인스턴스
+     * @param tokenInfo  TokenInfo DTO 인스턴스
      */
     @Transactional
     public void saveRefreshTokenToRepository(Long merchantId, TokenInfo tokenInfo) {
@@ -70,10 +67,10 @@ public class MerchantAuthService {
         // maybeRefreshToken의 값이 null일 경우 (DB에 해당 멤버의 토큰 존재 X) 새로 저장
         if (maybeRefreshToken.isEmpty()) {
             merchantRefreshTokenRepository.save(MerchantRefreshToken.builder()
-                    .memberId(merchantId)
-                    .token(tokenInfo.getToken())
-                    .expiration(tokenInfo.getExpiration())
-                    .build());
+                .memberId(merchantId)
+                .token(tokenInfo.getToken())
+                .expiration(tokenInfo.getExpiration())
+                .build());
             return;
         }
 

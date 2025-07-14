@@ -1,6 +1,5 @@
 package git_kkalnane.starbucksbackenv2.domain.auth.merchant.dto;
 
-
 import git_kkalnane.starbucksbackenv2.domain.auth.merchant.dto.response.MerchantLoginResponse;
 
 public record MerchantLoginDto(String accessToken, String refreshToken, String name, String email) {

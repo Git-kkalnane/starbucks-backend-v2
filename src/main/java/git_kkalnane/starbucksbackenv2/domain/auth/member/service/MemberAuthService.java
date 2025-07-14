@@ -1,6 +1,5 @@
 package git_kkalnane.starbucksbackenv2.domain.auth.member.service;
 
-
 import git_kkalnane.starbucksbackenv2.domain.auth.common.dto.request.LoginRequest;
 import git_kkalnane.starbucksbackenv2.domain.auth.common.exception.AuthErrorCode;
 import git_kkalnane.starbucksbackenv2.domain.auth.common.exception.AuthException;
