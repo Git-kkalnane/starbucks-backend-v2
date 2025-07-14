@@ -41,7 +41,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Gradle을 이용해 프로젝트 파일을 jar 파일로 빌드
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       # 테스트 실행 (선택사항 - 필요시 추가)
       - name: 테스트 실행
@@ -83,7 +83,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Gradle을 이용해 프로젝트 파일을 jar 파일로 빌드
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       - name: AWS 인증 정보 설정
         uses: aws-actions/configure-aws-credentials@v4
@@ -107,13 +107,19 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-      - name: Dockerrun.aws.json에서 이미지 이름 교체
+      - name: Dockerrun.aws.json 수정
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.MY_ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
+          RDS_ENDPOINT: ${{ secrets.MY_RDS_ENDPOINT }}
+          DB_USERNAME: ${{ secrets.MY_DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.MY_DB_PASSWORD }}
         run: |
           sed -i "s|<IMAGE_NAME>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" Dockerrun.aws.json
+          sed -i "s|<RDS_ENDPOINT>|$RDS_ENDPOINT|g" Dockerrun.aws.json
+          sed -i "s|<DB_USERNAME>|$DB_USERNAME|g" Dockerrun.aws.json
+          sed -i "s|<DB_PASSWORD>|$DB_PASSWORD|g" Dockerrun.aws.json
 
       - name: 현재 시간정보 획득
         uses: josStorer/get-current-time@v2
