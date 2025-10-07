@@ -1,9 +1,9 @@
 # 스타벅스 클론
 
 ## 🙌🏻 멤버
-| [<img src="https://github.com/Cori1304-Seong.png" width="100" alt="성종민" />](https://github.com/Cori1304-Seong) | [<img src="https://github.com/0-tae.png" width="100" alt="최용태" />](https://github.com/0-tae) | [<img src="https://github.com/dotae1.png" width="100" alt="김다빈" />](https://github.com/dotae1) | [<img src="https://github.com/EndlessMilkyway.png" width="100" alt="김영렬" />](https://github.com/EndlessMilkyway) |  [<img src="https://github.com/seongjunin98.png" width="100" alt="인성준" />](https://github.com/seongjunin98) | 
+| [<img src="https://github.com/Cori1304-Seong.png" width="100" alt="성종민" />](https://github.com/Cori1304-Seong) | [<img src="https://github.com/0-tae.png" width="100" alt="최용태" />](https://github.com/0-tae) | [<img src="https://github.com/dotae1.png" width="100" alt="최다빈" />](https://github.com/dotae1) | [<img src="https://github.com/EndlessMilkyway.png" width="100" alt="김영렬" />](https://github.com/EndlessMilkyway) |  [<img src="https://github.com/seongjunin98.png" width="100" alt="인성준" />](https://github.com/seongjunin98) | 
 | :---: | :---: | :---: | :---: | :---: |
-| **[성종민](https://github.com/Cori1304-Seong)** | **[최용태](https://github.com/0-tae)** | **[김다빈](https://github.com/dotae1)** | **[김영렬](https://github.com/EndlessMilkyway)** | **[인성준](https://github.com/seongjunin98)** 
+| **[성종민](https://github.com/Cori1304-Seong)** | **[최용태](https://github.com/0-tae)** | **[최다빈](https://github.com/dotae1)** | **[김영렬](https://github.com/EndlessMilkyway)** | **[인성준](https://github.com/seongjunin98)** 
 
 ## 📋 목차
 - [프로젝트 개요](#-프로젝트-개요)
